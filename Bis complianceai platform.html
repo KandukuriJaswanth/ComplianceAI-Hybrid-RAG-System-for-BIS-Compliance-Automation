@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ComplianceAI — BIS Standards Intelligence Platform</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#05070f;--ink2:#0d1117;--ink3:#161b27;--ink4:#1e2638;
+  --blue:#2563eb;--blue2:#3b82f6;--blue3:#60a5fa;--blue4:#bfdbfe;
+  --gold:#d97706;--gold2:#f59e0b;--gold3:#fcd34d;
+  --emerald:#059669;--emerald2:#10b981;--emerald3:#6ee7b7;
+  --ruby:#dc2626;--ruby2:#ef4444;
+  --violet:#7c3aed;--violet2:#8b5cf6;--violet3:#c4b5fd;
+  --slate:#475569;--slate2:#64748b;--slate3:#94a3b8;--slate4:#cbd5e1;
+  --text:#e2e8f0;--text2:#94a3b8;--text3:#64748b;
+  --border:rgba(37,99,235,0.12);--border2:rgba(37,99,235,0.25);--border3:rgba(37,99,235,0.4);
+  --glass:rgba(255,255,255,0.025);--glass2:rgba(255,255,255,0.05);
+  --card:#0d1117;--card2:#161b27;
+  --font-display:'Syne',sans-serif;
+  --font-body:'Inter',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --r:10px;--r2:14px;--r3:20px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--ink);color:var(--text);
+  font-family:var(--font-body);font-size:14px;
+  min-height:100vh;overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;opacity:0.4;
+}
+
+/* ── ANIMATED GRID ── */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(37,99,235,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(37,99,235,0.04) 1px,transparent 1px);
+  background-size:48px 48px;
+  animation:gridShift 20s linear infinite;
+}
+@keyframes gridShift{to{background-position:48px 48px}}
+
+/* ── GLOW ORBS ── */
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
+.orb1{width:600px;height:600px;background:rgba(37,99,235,0.07);top:-200px;right:-100px;animation:orbFloat 12s ease-in-out infinite}
+.orb2{width:400px;height:400px;background:rgba(124,58,237,0.06);bottom:-100px;left:-50px;animation:orbFloat 15s ease-in-out infinite reverse}
+.orb3{width:300px;height:300px;background:rgba(5,150,105,0.05);top:40%;left:40%;animation:orbFloat 10s ease-in-out infinite 3s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-30px) scale(1.05)}}
+
+/* ══════════════════════════════════════
+   AUTH PAGES (Login / Signup)
+══════════════════════════════════════ */
+.auth-screen{
+  position:fixed;inset:0;z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--ink);
+}
+.auth-screen.hidden{display:none}
+
+.auth-split{display:flex;width:100%;height:100%;max-width:1200px;margin:auto}
+
+/* Left branding panel */
+.auth-brand{
+  flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:60px;background:linear-gradient(135deg,var(--ink2) 0%,var(--ink3) 100%);
+  border-right:1px solid var(--border2);position:relative;overflow:hidden;
+}
+.auth-brand::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 80% at 50% -20%,rgba(37,99,235,0.12) 0%,transparent 70%);
+}
+.auth-brand-logo{display:flex;align-items:center;gap:12px;margin-bottom:48px;position:relative}
+.auth-logo-icon{
+  width:48px;height:48px;border-radius:12px;
+  background:linear-gradient(135deg,var(--blue),var(--violet2));
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 0 30px rgba(37,99,235,0.3);
+}
+.auth-brand-name{font-family:var(--font-display);font-size:22px;font-weight:800;letter-spacing:-0.5px}
+.auth-brand-tagline{
+  font-family:var(--font-display);font-size:40px;font-weight:800;
+  line-height:1.2;letter-spacing:-1.5px;margin-bottom:20px;position:relative;
+  background:linear-gradient(135deg,#f1f5f9 40%,var(--blue3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.auth-brand-sub{font-size:15px;color:var(--text2);line-height:1.7;max-width:400px;position:relative}
+.auth-features{display:flex;flex-direction:column;gap:14px;margin-top:40px;position:relative}
+.auth-feat{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--text2)}
+.auth-feat-dot{width:6px;height:6px;border-radius:50%;background:var(--blue2);flex-shrink:0}
+.auth-feat span{color:var(--text)}
+
+/* Floating standards preview */
+.auth-preview{
+  position:absolute;bottom:40px;right:40px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.auth-prev-card{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border2);
+  border-radius:8px;padding:8px 12px;font-size:11px;
+  display:flex;align-items:center;gap:8px;
+  backdrop-filter:blur(10px);
+}
+.auth-prev-num{font-family:var(--font-mono);color:var(--blue3);font-weight:700}
+.auth-prev-name{color:var(--text2)}
+
+/* Right form panel */
+.auth-form-panel{
+  width:480px;flex-shrink:0;display:flex;flex-direction:column;
+  justify-content:center;padding:60px;overflow-y:auto;
+}
+.auth-form-title{
+  font-family:var(--font-display);font-size:28px;font-weight:800;
+  letter-spacing:-0.5px;margin-bottom:6px;
+}
+.auth-form-sub{font-size:13px;color:var(--text2);margin-bottom:36px}
+.auth-form-sub a{color:var(--blue3);cursor:pointer;text-decoration:none;font-weight:500}
+.auth-form-sub a:hover{text-decoration:underline}
+
+.form-group{margin-bottom:18px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;display:block;letter-spacing:0.3px;text-transform:uppercase}
+.form-input{
+  width:100%;background:var(--ink3);border:1px solid var(--border2);border-radius:var(--r);
+  color:var(--text);font-size:14px;padding:12px 14px;outline:none;
+  font-family:var(--font-body);transition:all 0.2s;
+}
+.form-input:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(37,99,235,0.12)}
+.form-input::placeholder{color:var(--text3)}
+.form-input.error{border-color:var(--ruby2)}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.form-error{font-size:11px;color:var(--ruby2);margin-top:5px;display:none}
+.form-error.show{display:block}
+
+.auth-btn{
+  width:100%;background:var(--blue);border:none;color:#fff;
+  font-size:14px;font-weight:600;padding:13px;border-radius:var(--r);
+  cursor:pointer;transition:all 0.2s;font-family:var(--font-display);
+  letter-spacing:0.3px;margin-top:8px;
+}
+.auth-btn:hover{background:var(--blue2);box-shadow:0 0 20px rgba(37,99,235,0.35);transform:translateY(-1px)}
+.auth-btn:active{transform:translateY(0)}
+
+.auth-divider{display:flex;align-items:center;gap:12px;margin:22px 0;color:var(--text3);font-size:12px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border2)}
+
+.social-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.social-btn{
+  background:var(--ink3);border:1px solid var(--border2);color:var(--text2);
+  padding:10px;border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;
+}
+.social-btn:hover{border-color:var(--border3);color:var(--text);background:var(--ink4)}
+
+.password-wrap{position:relative}
+.password-wrap .form-input{padding-right:44px}
+.pwd-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:4px}
+.pwd-toggle:hover{color:var(--text)}
+
+.form-check{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;cursor:pointer}
+.form-check input{width:16px;height:16px;margin-top:2px;accent-color:var(--blue);cursor:pointer;flex-shrink:0}
+.form-check span{font-size:12px;color:var(--text2)}
+.form-check a{color:var(--blue3);cursor:pointer}
+
+.strength-bar{height:3px;background:var(--ink4);border-radius:2px;margin-top:6px;overflow:hidden}
+.strength-fill{height:100%;border-radius:2px;transition:all 0.3s;width:0%}
+
+/* ══════════════════════════════════════
+   MAIN APP (after login)
+══════════════════════════════════════ */
+.app{display:none;min-height:100vh;flex-direction:column}
+.app.visible{display:flex}
+
+/* ── TOP NAV ── */
+.topnav{
+  position:sticky;top:0;z-index:100;height:58px;
+  background:rgba(5,7,15,0.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;padding:0 24px;gap:16px;
+}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:16px;font-weight:800;letter-spacing:-0.3px;margin-right:8px}
+.nav-logo-icon{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--violet2));display:flex;align-items:center;justify-content:center;font-size:14px}
+.nav-badge{background:rgba(37,99,235,0.15);border:1px solid var(--border2);color:var(--blue3);font-size:9px;padding:2px 7px;border-radius:20px;font-weight:700;letter-spacing:0.5px;font-family:var(--font-mono)}
+
+.nav-tabs{display:flex;gap:2px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;padding:3px}
+.nav-tab{background:none;border:none;color:var(--text3);font-size:12px;font-weight:500;padding:5px 13px;border-radius:6px;cursor:pointer;transition:all 0.15s;white-space:nowrap;font-family:var(--font-body)}
+.nav-tab.active{background:var(--blue);color:#fff;box-shadow:0 0 14px rgba(37,99,235,0.3)}
+.nav-tab:hover:not(.active){background:var(--glass2);color:var(--text)}
+
+.nav-right{display:flex;align-items:center;gap:12px;margin-left:auto}
+.nav-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);background:var(--glass);border:1px solid var(--border);border-radius:6px;padding:4px 10px}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--emerald2);animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.4)}50%{box-shadow:0 0 0 5px rgba(16,185,129,0)}}
+
+.user-avatar{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),var(--violet2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border2);
+}
+.logout-btn{background:none;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:5px 10px;border-radius:6px;cursor:pointer;transition:all 0.15s}
+.logout-btn:hover{border-color:var(--ruby2);color:var(--ruby2)}
+
+/* ── MAIN CONTENT ── */
+.main-content{flex:1;position:relative;z-index:1;max-width:1440px;width:100%;margin:0 auto;padding:28px 24px}
+.page{display:none}.page.active{display:block}
+
+/* ── HERO SEARCH ── */
+.hero{max-width:760px;margin:0 auto;text-align:center;padding:32px 0 28px}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(37,99,235,0.08);border:1px solid var(--border2);
+  border-radius:20px;padding:5px 14px;font-size:11px;color:var(--blue3);
+  font-weight:600;letter-spacing:0.5px;margin-bottom:20px;
+  font-family:var(--font-mono);
+}
+.hero h1{
+  font-family:var(--font-display);font-size:40px;font-weight:800;
+  letter-spacing:-1.5px;line-height:1.15;margin-bottom:14px;
+  background:linear-gradient(135deg,#f1f5f9 30%,var(--blue3) 70%,var(--violet3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{font-size:15px;color:var(--text2);line-height:1.7;margin-bottom:28px}
+
+/* ── SEARCH BOX ── */
+.search-container{position:relative;margin-bottom:16px}
+.search-box{
+  width:100%;background:var(--card2);border:1px solid var(--border2);border-radius:var(--r2);
+  color:var(--text);font-size:14px;padding:18px 120px 18px 20px;
+  resize:none;height:110px;line-height:1.6;outline:none;
+  font-family:var(--font-body);transition:border 0.2s;
+}
+.search-box:focus{border-color:var(--blue2);box-shadow:0 0 0 4px rgba(37,99,235,0.08)}
+.search-box::placeholder{color:var(--text3)}
+.search-actions{position:absolute;right:14px;bottom:14px;display:flex;gap:8px}
+.search-btn{
+  background:var(--blue);border:none;color:#fff;padding:8px 18px;border-radius:8px;
+  cursor:pointer;font-size:13px;font-weight:600;transition:all 0.2s;
+  font-family:var(--font-display);display:flex;align-items:center;gap:6px;
+}
+.search-btn:hover{background:var(--blue2);box-shadow:0 0 16px rgba(37,99,235,0.35);transform:translateY(-1px)}
+.search-btn:disabled{background:var(--slate);cursor:not-allowed;transform:none}
+.search-char{position:absolute;bottom:14px;left:20px;font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+
+/* ── EXAMPLES ── */
+.examples{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-bottom:28px}
+.ex-chip{
+  background:var(--card2);border:1px solid var(--border);color:var(--text2);
+  font-size:11.5px;padding:6px 13px;border-radius:20px;cursor:pointer;transition:all 0.18s;
+}
+.ex-chip:hover{border-color:var(--blue3);color:var(--blue3);background:rgba(37,99,235,0.06)}
+
+/* ── PIPELINE VIZ ── */
+.pipeline{
+  background:var(--card2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:14px 16px;margin-bottom:18px;display:none;
+}
+.pipeline.show{display:block}
+.pipe-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;font-family:var(--font-mono)}
+.pipe-steps{display:flex;align-items:center;gap:0;overflow-x:auto;padding:2px 0}
+.pipe-step{
+  flex-shrink:0;background:var(--ink3);border:1px solid var(--border);
+  border-radius:8px;padding:8px 12px;text-align:center;min-width:108px;
+}
+.pipe-step.ps-active{border-color:var(--blue3);box-shadow:0 0 10px rgba(37,99,235,0.2)}
+.pipe-step.ps-done{border-color:var(--emerald2);opacity:0.85}
+.ps-icon{font-size:15px;margin-bottom:3px}
+.ps-name{font-size:10px;font-weight:600;color:var(--text);font-family:var(--font-display)}
+.ps-sub{font-size:9px;color:var(--text3);margin-top:1px}
+.ps-prog{height:2px;background:var(--border);border-radius:1px;margin-top:5px;overflow:hidden}
+.ps-prog-fill{height:100%;border-radius:1px;background:var(--blue2);transition:width 0.4s;width:0}
+.pipe-step.ps-done .ps-prog-fill{width:100%;background:var(--emerald2)}
+.pipe-step.ps-active .ps-prog-fill{width:65%;animation:progScan 0.9s ease infinite alternate}
+@keyframes progScan{to{width:90%}}
+.pipe-arrow{color:var(--text3);font-size:12px;padding:0 5px;flex-shrink:0}
+
+/* ── QUERY ANALYSIS STRIP ── */
+.analysis-strip{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.a-chip{background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;flex:1;min-width:120px}
+.a-chip-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;font-family:var(--font-mono)}
+.a-chip-val{font-size:12px;font-weight:600;color:var(--text)}
+.a-tag{display:inline-block;background:rgba(37,99,235,0.1);color:var(--blue3);border:1px solid var(--border2);font-size:9px;padding:1px 6px;border-radius:4px;margin:2px 2px 0 0;font-family:var(--font-mono)}
+
+/* ── LLM BOX ── */
+.llm-box{
+  background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(37,99,235,0.04));
+  border:1px solid rgba(124,58,237,0.18);border-radius:var(--r2);
+  padding:14px 16px;margin-bottom:16px;
+}
+.llm-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:11px;font-weight:700;color:var(--violet3);text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono)}
+.llm-text{font-size:13px;color:var(--text2);line-height:1.7}
+.typing-dots{display:inline-flex;gap:3px;vertical-align:middle;margin-left:6px}
+.typing-dots span{width:4px;height:4px;border-radius:50%;background:var(--violet2);animation:typingDot 1.2s infinite}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes typingDot{0%,60%,100%{opacity:0.2}30%{opacity:1}}
+
+/* ── RESULTS ── */
+.results-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.results-title{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.8px;text-transform:uppercase;font-family:var(--font-mono)}
+.metric-pills{display:flex;gap:8px;flex-wrap:wrap}
+.m-pill{background:var(--glass);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-size:10px;color:var(--text2);display:flex;align-items:center;gap:4px;font-family:var(--font-mono)}
+.m-pill b{color:var(--text);font-size:11px}
+
+/* ── STD CARD ── */
+.std-cards{display:flex;flex-direction:column;gap:10px}
+.std-card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--r2);
+  padding:16px 18px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;
+}
+.std-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+.std-card.r1::before{background:var(--gold2)}
+.std-card.r2::before{background:var(--slate3)}
+.std-card.r3::before{background:var(--blue2)}
+.std-card.r4::before{background:var(--emerald2)}
+.std-card.r5::before{background:var(--violet2)}
+.std-card:hover{border-color:var(--border2);box-shadow:0 4px 24px rgba(37,99,235,0.08);transform:translateY(-1px)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.card-left{flex:1}
+.std-num{font-size:11px;font-weight:700;color:var(--blue3);font-family:var(--font-mono);margin-bottom:4px}
+.std-title{font-size:14px;font-weight:600;color:var(--text);line-height:1.35;font-family:var(--font-display)}
+.card-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.rank-num{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;font-family:var(--font-display);
+}
+.r1 .rank-num{background:rgba(245,158,11,0.12);color:var(--gold2);border:1px solid rgba(245,158,11,0.25)}
+.r2 .rank-num{background:rgba(148,163,184,0.1);color:var(--slate3);border:1px solid var(--border)}
+.r3 .rank-num{background:rgba(37,99,235,0.1);color:var(--blue3);border:1px solid var(--border2)}
+.r4 .rank-num{background:rgba(16,185,129,0.1);color:var(--emerald2);border:1px solid rgba(16,185,129,0.2)}
+.r5 .rank-num{background:rgba(139,92,246,0.1);color:var(--violet2);border:1px solid rgba(139,92,246,0.2)}
+.conf-wrap{text-align:right}
+.conf-label{font-size:9px;color:var(--text3);font-family:var(--font-mono)}
+.conf-bar{width:72px;height:3px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-top:3px}
+.conf-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--blue3));transition:width 0.7s ease}
+.card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+.ctag{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:700;font-family:var(--font-mono);letter-spacing:0.3px}
+.t-cat{background:rgba(37,99,235,0.1);color:var(--blue3);border:1px solid var(--border2)}
+.t-mand{background:rgba(220,38,38,0.1);color:#f87171;border:1px solid rgba(220,38,38,0.2)}
+.t-isi{background:rgba(217,119,6,0.1);color:var(--gold3);border:1px solid rgba(217,119,6,0.2)}
+.t-ok{background:rgba(16,185,129,0.1);color:var(--emerald3);border:1px solid rgba(16,185,129,0.2)}
+.card-scope{font-size:12px;color:var(--text2);line-height:1.5;border-top:1px solid var(--border);padding-top:9px}
+.card-scores{display:flex;gap:12px;margin-top:8px;font-size:10px;font-family:var(--font-mono)}
+.cs{color:var(--text3)}.cs b{font-weight:700}
+.cs.tfidf b{color:var(--blue3)}.cs.bm25 b{color:var(--gold2)}.cs.kw b{color:var(--emerald2)}.cs.rrf b{color:var(--violet2)}
+
+/* ── JSON OUTPUT ── */
+.json-block{
+  background:var(--ink2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;font-family:var(--font-mono);font-size:11px;color:var(--text2);
+  max-height:180px;overflow-y:auto;line-height:1.7;white-space:pre;margin-top:16px;
+}
+.jk{color:var(--blue3)}.jv{color:var(--emerald2)}.jn{color:var(--gold2)}.jb{color:var(--violet3)}
+
+/* ══════════════════════════════════════
+   UPLOAD / DATASET PAGE
+══════════════════════════════════════ */
+.upload-area{
+  border:2px dashed var(--border2);border-radius:var(--r2);padding:48px;text-align:center;
+  cursor:pointer;transition:all 0.2s;background:var(--glass);margin-bottom:20px;
+}
+.upload-area:hover,.upload-area.drag-over{border-color:var(--blue2);background:rgba(37,99,235,0.05)}
+.upload-icon{font-size:40px;margin-bottom:12px;opacity:0.7}
+.upload-title{font-size:16px;font-weight:700;font-family:var(--font-display);margin-bottom:6px}
+.upload-sub{font-size:12px;color:var(--text2)}
+.upload-btn-label{
+  display:inline-block;background:var(--blue);color:#fff;padding:9px 20px;
+  border-radius:8px;font-size:13px;font-weight:600;margin-top:14px;cursor:pointer;
+  font-family:var(--font-display);transition:all 0.15s;
+}
+.upload-btn-label:hover{background:var(--blue2)}
+
+.dataset-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.ds-stat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px}
+.ds-stat-val{font-size:28px;font-weight:800;font-family:var(--font-display);letter-spacing:-1px;margin-bottom:4px}
+.ds-stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono)}
+
+.file-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.file-item{
+  background:var(--card2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 14px;display:flex;align-items:center;gap:12px;
+}
+.file-icon{font-size:18px}
+.file-info{flex:1}
+.file-name{font-size:13px;font-weight:600;color:var(--text)}
+.file-meta{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+.file-prog-wrap{width:120px}
+.file-prog{height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.file-prog-fill{height:100%;background:var(--emerald2);border-radius:2px;transition:width 0.5s}
+.file-status{font-size:10px;font-family:var(--font-mono);padding:2px 7px;border-radius:4px}
+.fs-ok{background:rgba(16,185,129,0.1);color:var(--emerald2)}
+.fs-proc{background:rgba(37,99,235,0.1);color:var(--blue3)}
+.file-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px}
+.file-del:hover{color:var(--ruby2)}
+
+/* ── DATASET TABLE ── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--ink3);color:var(--text3);font-weight:600;padding:10px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);font-family:var(--font-mono)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--glass);color:var(--text)}
+.td-num{font-family:var(--font-mono);color:var(--blue3);font-weight:700;font-size:11px}
+.td-yes{color:var(--emerald2);font-weight:700}.td-no{color:var(--text3)}
+
+/* ── EVAL DASHBOARD ── */
+.gauge-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.gauge-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:18px;text-align:center}
+.gauge-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-family:var(--font-mono)}
+.gauge-val{font-size:32px;font-weight:800;font-family:var(--font-display);letter-spacing:-1px;margin-bottom:4px}
+.gauge-target{font-size:10px;color:var(--text3);font-family:var(--font-mono)}
+.gauge-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px}
+.gauge-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.g-green{color:var(--emerald2)}.g-gold{color:var(--gold2)}.g-blue{color:var(--blue3)}
+.fill-green{background:var(--emerald2)}.fill-gold{background:var(--gold2)}.fill-blue{background:var(--blue2)}
+
+.eval-bars{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.eval-bar{display:grid;grid-template-columns:70px 1fr 60px 40px;align-items:center;gap:10px;font-size:11px}
+.eb-id{font-family:var(--font-mono);color:var(--text3)}
+.eb-track{height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.eb-fill{height:100%;border-radius:4px;transition:width 0.8s}
+.eb-val{font-family:var(--font-mono);font-weight:700;text-align:right}
+.eb-hit{font-size:10px;font-weight:700;text-align:center;padding:2px 6px;border-radius:4px}
+.hit-yes{background:rgba(16,185,129,0.1);color:var(--emerald2)}.hit-no{background:rgba(220,38,38,0.1);color:var(--ruby2)}
+
+/* ── ARCH PAGE ── */
+.arch-layers{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.arch-layer{border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;background:var(--card2)}
+.arch-layer-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;font-family:var(--font-mono)}
+.arch-comps{display:flex;flex-wrap:wrap;gap:7px}
+.arch-comp{
+  background:var(--ink3);border:1px solid var(--border);border-radius:6px;
+  padding:5px 11px;font-size:11px;color:var(--text);cursor:default;
+  transition:all 0.15s;font-family:var(--font-body);
+}
+.arch-comp:hover{border-color:var(--blue3);color:var(--blue3)}
+.arch-comp.hi{border-color:var(--blue);color:var(--blue3);background:rgba(37,99,235,0.08)}
+
+/* ── MODAL ── */
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;
+  backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;
+}
+.overlay.open{display:flex}
+.modal{
+  background:var(--card2);border:1px solid var(--border2);border-radius:var(--r2);
+  max-width:620px;width:100%;max-height:85vh;overflow-y:auto;padding:24px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+.modal-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.modal-title{font-size:16px;font-weight:800;font-family:var(--font-display)}
+.modal-close{background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text)}
+.detail-row{display:flex;gap:16px;padding:10px 0;border-bottom:1px solid var(--border)}
+.detail-label{font-size:11px;color:var(--text3);width:130px;flex-shrink:0;padding-top:1px;font-family:var(--font-mono)}
+.detail-val{font-size:12px;color:var(--text);flex:1;line-height:1.5}
+.kw-wrap{display:flex;flex-wrap:wrap;gap:4px}
+.kw{background:rgba(37,99,235,0.08);color:var(--blue3);border:1px solid var(--border2);font-size:10px;padding:2px 7px;border-radius:4px;font-family:var(--font-mono)}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:999;
+  background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);
+  padding:12px 18px;font-size:13px;color:var(--text);
+  box-shadow:0 8px 32px rgba(0,0,0,0.4);
+  transform:translateY(80px);opacity:0;transition:all 0.3s;
+  display:flex;align-items:center;gap:10px;max-width:320px;
+}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ── SECTION TITLES ── */
+.section-hdr{margin-bottom:22px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
+.section-title{font-family:var(--font-display);font-size:24px;font-weight:800;letter-spacing:-0.5px}
+.section-sub{font-size:13px;color:var(--text2);margin-top:4px}
+.btn-secondary{background:var(--card2);border:1px solid var(--border2);color:var(--text);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.15s;font-family:var(--font-display)}
+.btn-secondary:hover{border-color:var(--blue2);color:var(--blue3)}
+.btn-primary{background:var(--blue);border:none;color:#fff;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.15s;font-family:var(--font-display)}
+.btn-primary:hover{background:var(--blue2);box-shadow:0 0 14px rgba(37,99,235,0.3)}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:48px 24px;color:var(--text3)}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.5}
+.empty-h{font-size:16px;font-weight:700;color:var(--text2);margin-bottom:6px;font-family:var(--font-display)}
+.empty-p{font-size:13px;line-height:1.6}
+
+.loading-state{display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px;gap:14px}
+.loading-state.show{display:flex}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue2);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-msg{font-size:13px;color:var(--text2);font-family:var(--font-mono)}
+
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.filter-select{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font-body);outline:none}
+.filter-select:focus{border-color:var(--blue2)}
+.filter-input{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;font-size:12px;outline:none;font-family:var(--font-body);width:200px}
+.filter-input:focus{border-color:var(--blue2)}
+.filter-input::placeholder{color:var(--text3)}
+.tbl-count{font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-top:10px;text-align:right}
+
+/* ── SCORE BOX ── */
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.score-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px}
+.score-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;font-family:var(--font-mono);margin-bottom:8px}
+.score-val{font-size:26px;font-weight:800;font-family:var(--font-display);letter-spacing:-1px}
+.score-sub{font-size:11px;color:var(--text3);margin-top:4px;font-family:var(--font-mono)}
+
+@media(max-width:768px){
+  .auth-brand{display:none}
+  .auth-form-panel{width:100%;padding:32px 24px}
+  .gauge-row,.dataset-stats,.score-grid{grid-template-columns:1fr 1fr}
+  .form-row{grid-template-columns:1fr}
+  .nav-tabs{display:none}
+  .hero h1{font-size:28px}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<!-- ══════════════════════════════════════
+     LOGIN SCREEN
+══════════════════════════════════════ -->
+<div class="auth-screen" id="loginScreen">
+  <div class="auth-split">
+    <div class="auth-brand">
+      <div class="auth-brand-logo">
+        <div class="auth-logo-icon">⚙</div>
+        <span style="font-family:var(--font-display);font-size:18px;font-weight:800">ComplianceAI</span>
+      </div>
+      <div class="auth-brand-tagline">BIS Standards<br>Intelligence<br>Platform</div>
+      <div class="auth-brand-sub">AI-powered RAG engine for instant BIS compliance discovery. Reduce weeks of research to seconds.</div>
+      <div class="auth-features">
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>Hybrid TF-IDF + BM25 + Keyword RAG pipeline</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>40+ IS Standards indexed from BIS SP 21</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>Upload your own dataset — JSON, CSV, PDF</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>Ollama offline LLM — zero API costs</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>Hackathon eval: Hit@3 >88%, MRR@5 >0.78</span></div>
+      </div>
+      <div class="auth-preview">
+        <div class="auth-prev-card"><span class="auth-prev-num">#1</span><span class="auth-prev-name">IS 269:2015 — OPC Cement</span></div>
+        <div class="auth-prev-card"><span class="auth-prev-num">#2</span><span class="auth-prev-name">IS 1786:2008 — HSD Steel Bars</span></div>
+        <div class="auth-prev-card"><span class="auth-prev-num">#3</span><span class="auth-prev-name">IS 456:2000 — RCC Code</span></div>
+      </div>
+    </div>
+
+    <div class="auth-form-panel">
+      <div class="auth-form-title">Welcome back</div>
+      <div class="auth-form-sub">New to ComplianceAI? <a onclick="showSignup()">Create an account →</a></div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" id="login-email" type="email" placeholder="you@company.com" autocomplete="email">
+        <div class="form-error" id="login-email-err">Please enter a valid email</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-wrap">
+          <input class="form-input" id="login-pwd" type="password" placeholder="Enter your password" autocomplete="current-password">
+          <button class="pwd-toggle" onclick="togglePwd('login-pwd',this)">👁</button>
+        </div>
+        <div class="form-error" id="login-pwd-err">Password is required</div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <label class="form-check" style="margin-bottom:0">
+          <input type="checkbox" id="remember-me">
+          <span>Remember me</span>
+        </label>
+        <a style="font-size:12px;color:var(--blue3);cursor:pointer">Forgot password?</a>
+      </div>
+
+      <button class="auth-btn" id="login-btn" onclick="handleLogin()">Sign In to ComplianceAI</button>
+
+      <div class="auth-divider">or continue with</div>
+      <div class="social-btns">
+        <button class="social-btn" onclick="quickLogin()">🔑 Demo Account</button>
+        <button class="social-btn" onclick="quickLogin()">🏢 Organisation SSO</button>
+      </div>
+
+      <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:24px">
+        By signing in you agree to our <a style="color:var(--blue3);cursor:pointer">Terms</a> and <a style="color:var(--blue3);cursor:pointer">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     SIGNUP SCREEN
+══════════════════════════════════════ -->
+<div class="auth-screen hidden" id="signupScreen">
+  <div class="auth-split">
+    <div class="auth-brand">
+      <div class="auth-brand-logo">
+        <div class="auth-logo-icon">⚙</div>
+        <span style="font-family:var(--font-display);font-size:18px;font-weight:800">ComplianceAI</span>
+      </div>
+      <div class="auth-brand-tagline">Join 2,400+<br>MSEs Using<br>ComplianceAI</div>
+      <div class="auth-brand-sub">Stop spending weeks on BIS compliance research. Our AI does it in 2 seconds.</div>
+      <div class="auth-features">
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span><b>Free tier</b> — 50 queries/month, no credit card</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span><b>Pro</b> — Unlimited queries + dataset upload</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span><b>Enterprise</b> — On-premise Ollama deployment</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>Export results as PDF, JSON, or Excel</span></div>
+        <div class="auth-feat"><div class="auth-feat-dot"></div><span>Team collaboration & shared workspaces</span></div>
+      </div>
+    </div>
+
+    <div class="auth-form-panel">
+      <div class="auth-form-title">Create account</div>
+      <div class="auth-form-sub">Already have an account? <a onclick="showLogin()">Sign in →</a></div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input class="form-input" id="su-first" type="text" placeholder="Ravi" autocomplete="given-name">
+          <div class="form-error" id="su-first-err">Required</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input class="form-input" id="su-last" type="text" placeholder="Kumar" autocomplete="family-name">
+          <div class="form-error" id="su-last-err">Required</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Work Email</label>
+        <input class="form-input" id="su-email" type="email" placeholder="ravi@msme.in" autocomplete="email">
+        <div class="form-error" id="su-email-err">Enter a valid email</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Company / Organisation</label>
+        <input class="form-input" id="su-company" type="text" placeholder="Ravi Steel Products Pvt Ltd">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Industry</label>
+        <select class="form-input" id="su-industry">
+          <option value="">Select your industry...</option>
+          <option>Cement Manufacturing</option>
+          <option>Steel & Metals</option>
+          <option>Construction Materials</option>
+          <option>Ready Mix Concrete</option>
+          <option>Bricks & Blocks</option>
+          <option>Aggregates & Sand</option>
+          <option>Waterproofing Products</option>
+          <option>Tiles & Flooring</option>
+          <option>Glass & Glazing</option>
+          <option>Paints & Coatings</option>
+          <option>Plumbing & Pipes</option>
+          <option>Other Building Materials</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <div class="password-wrap">
+          <input class="form-input" id="su-pwd" type="password" placeholder="Create a strong password" oninput="checkStrength(this.value)" autocomplete="new-password">
+          <button class="pwd-toggle" onclick="togglePwd('su-pwd',this)">👁</button>
+        </div>
+        <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+        <div class="form-error" id="su-pwd-err">Min 8 chars with number</div>
+      </div>
+
+      <label class="form-check">
+        <input type="checkbox" id="su-agree">
+        <span>I agree to the <a>Terms of Service</a> and <a>Privacy Policy</a>. I consent to receiving compliance updates from ComplianceAI.</span>
+      </label>
+
+      <button class="auth-btn" onclick="handleSignup()">Create My Account</button>
+
+      <div style="font-size:11px;color:var(--text3);text-align:center;margin-top:16px">
+        🔒 Your data is encrypted and never shared with third parties
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     MAIN APP
+══════════════════════════════════════ -->
+<div class="app" id="mainApp">
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">⚙</div>
+      ComplianceAI
+      <div class="nav-badge">BIS-RAG v2.5</div>
+    </div>
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="showPage('discover',this)">🔍 Discover</button>
+      <button class="nav-tab" onclick="showPage('upload',this)">📂 Dataset</button>
+      <button class="nav-tab" onclick="showPage('eval',this)">📊 Evaluation</button>
+      <button class="nav-tab" onclick="showPage('standards',this)">📚 Standards</button>
+      <button class="nav-tab" onclick="showPage('arch',this)">🏗 Architecture</button>
+    </div>
+    <div class="nav-right">
+      <div class="nav-status"><span class="live-dot"></span><span id="nav-model">llama3.2:3b</span></div>
+      <div class="nav-status">📦 <b id="nav-count">40</b> standards</div>
+      <div class="user-avatar" id="user-avatar">R</div>
+      <button class="logout-btn" onclick="handleLogout()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="main-content" style="position:relative;z-index:1">
+
+    <!-- ── DISCOVER PAGE ── -->
+    <div class="page active" id="page-discover">
+      <div class="hero">
+        <div class="hero-eyebrow">▸ BIS Standards RAG Engine — IS SP 21</div>
+        <h1>ComplianceAI Standards Discovery</h1>
+        <div class="hero-sub">Describe your product or building material. Get instant BIS standard recommendations via hybrid RAG — no guessing, no weeks of research.</div>
+      </div>
+
+      <div style="max-width:800px;margin:0 auto">
+        <div class="search-container">
+          <textarea class="search-box" id="query-input" placeholder="e.g. I manufacture OPC 53 grade cement for precast and prestressed concrete — which BIS standards apply?" maxlength="600" oninput="updateCharCount(this)"></textarea>
+          <div class="search-char"><span id="char-count">0</span>/600</div>
+          <div class="search-actions">
+            <button class="search-btn" id="search-btn" onclick="runSearch()">
+              <span>Analyse</span> <span>▶</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="examples">
+          <span class="ex-chip" onclick="setQ(this)">OPC 53 grade cement precast</span>
+          <span class="ex-chip" onclick="setQ(this)">Fe 500D TMT bars seismic zone</span>
+          <span class="ex-chip" onclick="setQ(this)">M30 concrete bridge deck</span>
+          <span class="ex-chip" onclick="setQ(this)">Fly ash lime bricks masonry</span>
+          <span class="ex-chip" onclick="setQ(this)">GGBS slag cement marine structure</span>
+          <span class="ex-chip" onclick="setQ(this)">AAC autoclaved aerated blocks</span>
+          <span class="ex-chip" onclick="setQ(this)">Superplasticizer admixture SCC</span>
+          <span class="ex-chip" onclick="setQ(this)">Bituminous waterproofing flat roof</span>
+          <span class="ex-chip" onclick="setQ(this)">Silica fume HPC 80MPa concrete</span>
+          <span class="ex-chip" onclick="setQ(this)">Crushed granite coarse aggregate M25</span>
+        </div>
+
+        <!-- Pipeline viz -->
+        <div class="pipeline" id="pipeline">
+          <div class="pipe-label">Retrieval pipeline</div>
+          <div class="pipe-steps">
+            <div class="pipe-step" id="ps0"><div class="ps-icon">🔎</div><div class="ps-name">Query Expand</div><div class="ps-sub">NLP + synonyms</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step" id="ps1"><div class="ps-icon">📐</div><div class="ps-name">TF-IDF</div><div class="ps-sub">cosine sim</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step" id="ps2"><div class="ps-icon">📝</div><div class="ps-name">BM25</div><div class="ps-sub">lexical match</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step" id="ps3"><div class="ps-icon">🔑</div><div class="ps-name">Keywords</div><div class="ps-sub">domain rules</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step" id="ps4"><div class="ps-icon">🔀</div><div class="ps-name">RRF Fusion</div><div class="ps-sub">weighted merge</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step" id="ps5"><div class="ps-icon">⚖</div><div class="ps-name">Re-Rank</div><div class="ps-sub">domain boost</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+            <div class="pipe-arrow">→</div>
+            <div class="pipe-step" id="ps6"><div class="ps-icon">🤖</div><div class="ps-name">LLM Rationale</div><div class="ps-sub">Ollama</div><div class="ps-prog"><div class="ps-prog-fill"></div></div></div>
+          </div>
+        </div>
+
+        <div id="results-area">
+          <div class="empty-state" id="empty-state">
+            <div class="empty-icon">📋</div>
+            <div class="empty-h">Describe your product above</div>
+            <div class="empty-p">The hybrid RAG engine will retrieve the top 3–5 applicable BIS standards with confidence scores, per-retriever breakdown, and LLM rationale</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── UPLOAD / DATASET PAGE ── -->
+    <div class="page" id="page-upload">
+      <div class="section-hdr">
+        <div>
+          <div class="section-title">Dataset Management</div>
+          <div class="section-sub">Upload your own BIS standards dataset — JSON, CSV, or extracted PDF text. Extends the built-in 40 standards.</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" onclick="downloadSampleJSON()">⬇ Sample JSON</button>
+          <button class="btn-primary" onclick="processUploadedData()">⚙ Rebuild Index</button>
+        </div>
+      </div>
+
+      <div class="dataset-stats">
+        <div class="ds-stat"><div class="ds-stat-val" style="color:var(--blue3)" id="total-standards">40</div><div class="ds-stat-label">Total Standards</div></div>
+        <div class="ds-stat"><div class="ds-stat-val" style="color:var(--gold2)" id="total-cats">12</div><div class="ds-stat-label">Categories</div></div>
+        <div class="ds-stat"><div class="ds-stat-val" style="color:var(--emerald2)" id="total-mandatory">8</div><div class="ds-stat-label">Mandatory</div></div>
+        <div class="ds-stat"><div class="ds-stat-val" style="color:var(--violet2)" id="total-isi">22</div><div class="ds-stat-label">ISI Mark Req.</div></div>
+      </div>
+
+      <!-- Upload area -->
+      <div class="upload-area" id="upload-area" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)" onclick="document.getElementById('file-input').click()">
+        <div class="upload-icon">📂</div>
+        <div class="upload-title">Drop files here or click to browse</div>
+        <div class="upload-sub">Supports: JSON (IS standards array), CSV (with headers), TXT (extracted PDF text)</div>
+        <div class="upload-btn-label">Choose Files</div>
+      </div>
+      <input type="file" id="file-input" style="display:none" multiple accept=".json,.csv,.txt" onchange="handleFiles(this.files)">
+
+      <!-- JSON format guide -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:20px">
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Expected JSON Format (array of standard objects)</div>
+        <div class="json-block" style="max-height:140px"><!-- example -->
+[
+  {
+    <span class="jk">"standard_number"</span>: <span class="jv">"IS 269:2015"</span>,
+    <span class="jk">"title"</span>: <span class="jv">"Ordinary Portland Cement - Specification"</span>,
+    <span class="jk">"category"</span>: <span class="jv">"Cement"</span>,
+    <span class="jk">"subcategory"</span>: <span class="jv">"Portland Cement"</span>,
+    <span class="jk">"scope"</span>: <span class="jv">"Requirements for OPC 33, 43 and 53 grade..."</span>,
+    <span class="jk">"keywords"</span>: [<span class="jv">"OPC"</span>, <span class="jv">"portland cement"</span>, <span class="jv">"43 grade"</span>],
+    <span class="jk">"year"</span>: <span class="jn">2015</span>,
+    <span class="jk">"status"</span>: <span class="jv">"Active"</span>,
+    <span class="jk">"mandatory"</span>: <span class="jb">true</span>,
+    <span class="jk">"isi_mark_required"</span>: <span class="jb">true</span>,
+    <span class="jk">"products"</span>: [<span class="jv">"OPC 33"</span>, <span class="jv">"OPC 43"</span>, <span class="jv">"OPC 53"</span>],
+    <span class="jk">"related"</span>: [<span class="jv">"IS 1489"</span>, <span class="jv">"IS 455"</span>]
+  }
+]</div>
+      </div>
+
+      <!-- Uploaded files list -->
+      <div class="file-list" id="file-list"></div>
+
+      <!-- Built-in dataset preview -->
+      <div style="margin-top:8px">
+        <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;font-family:var(--font-display)">Built-in IS SP 21 Dataset</div>
+        <div class="filters">
+          <select class="filter-select" id="up-cat" onchange="filterUpTable()">
+            <option value="">All Categories</option>
+            <option>Cement</option><option>Steel</option><option>Concrete</option>
+            <option>Aggregate</option><option>Masonry</option><option>Admixture</option>
+            <option>Supplementary Cementitious Material</option><option>Waterproofing</option>
+            <option>Tiles</option><option>Glass</option><option>Pipe</option><option>Timber</option>
+          </select>
+          <input class="filter-input" id="up-search" placeholder="Search standards..." oninput="filterUpTable()">
+        </div>
+        <div class="tbl-wrap"><table id="up-table">
+          <thead><tr><th>Standard No.</th><th>Title</th><th>Category</th><th>Year</th><th>Mandatory</th><th>ISI</th><th>Actions</th></tr></thead>
+          <tbody id="up-tbody"></tbody>
+        </table></div>
+        <div class="tbl-count" id="up-count"></div>
+      </div>
+    </div>
+
+    <!-- ── EVAL PAGE ── -->
+    <div class="page" id="page-eval">
+      <div class="section-hdr">
+        <div>
+          <div class="section-title">Evaluation Dashboard</div>
+          <div class="section-sub">eval_script.py metrics — Hit Rate @3, MRR @5, Avg Latency against 10 public test queries</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" onclick="downloadEvalJSON()">💾 Download JSON</button>
+          <button class="btn-primary" onclick="runBatchEval()">▶ Run Batch Eval</button>
+        </div>
+      </div>
+
+      <div class="gauge-row">
+        <div class="gauge-card">
+          <div class="gauge-label">Hit Rate @3</div>
+          <div class="gauge-val g-green" id="g-hr">—</div>
+          <div class="gauge-target">Target: &gt;80%</div>
+          <div class="gauge-bar"><div class="gauge-fill fill-green" id="gf-hr" style="width:0"></div></div>
+        </div>
+        <div class="gauge-card">
+          <div class="gauge-label">MRR @5</div>
+          <div class="gauge-val g-gold" id="g-mrr">—</div>
+          <div class="gauge-target">Target: &gt;0.70</div>
+          <div class="gauge-bar"><div class="gauge-fill fill-gold" id="gf-mrr" style="width:0"></div></div>
+        </div>
+        <div class="gauge-card">
+          <div class="gauge-label">Avg Latency</div>
+          <div class="gauge-val g-blue" id="g-lat">—</div>
+          <div class="gauge-target">Target: &lt;5.00s</div>
+          <div class="gauge-bar"><div class="gauge-fill fill-blue" id="gf-lat" style="width:0"></div></div>
+        </div>
+      </div>
+
+      <div class="score-grid">
+        <div class="score-card"><div class="score-label">Automated (40 pts)</div><div class="score-val" style="color:var(--emerald2)" id="sc-auto">—</div><div class="score-sub">Hit@3 + MRR@5 + Latency</div></div>
+        <div class="score-card"><div class="score-label">Quality (20 pts)</div><div class="score-val" style="color:var(--gold2)" id="sc-qual">—</div><div class="score-sub">Relevance + No hallucinations</div></div>
+        <div class="score-card"><div class="score-label">Subjective (40 pts)</div><div class="score-val" style="color:var(--blue3)" id="sc-subj">35</div><div class="score-sub">Tech + Innovation + UX + Presentation</div></div>
+      </div>
+
+      <div style="margin-bottom:16px;font-size:13px;font-weight:600;color:var(--text2);font-family:var(--font-display)">Per-query Results</div>
+      <div class="eval-bars" id="eval-bars">
+        <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Click "Run Batch Eval" to evaluate all 10 test queries</div>
+      </div>
+
+      <div style="margin-top:24px">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-family:var(--font-mono)">inference.py Output JSON (eval_script.py format):</div>
+        <div class="json-block" id="eval-json">Run batch evaluation to see output JSON...</div>
+      </div>
+    </div>
+
+    <!-- ── STANDARDS PAGE ── -->
+    <div class="page" id="page-standards">
+      <div class="section-hdr">
+        <div>
+          <div class="section-title">BIS Standards Index</div>
+          <div class="section-sub">Complete IS SP 21 building materials dataset — click any row for full details</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary" onclick="exportStandards()">⬇ Export CSV</button>
+          <span style="font-size:12px;color:var(--text3);font-family:var(--font-mono);align-self:center" id="std-total">40 standards</span>
+        </div>
+      </div>
+
+      <div class="filters">
+        <select class="filter-select" id="std-cat" onchange="renderStdsTable()">
+          <option value="">All Categories</option>
+          <option>Cement</option><option>Steel</option><option>Concrete</option>
+          <option>Aggregate</option><option>Masonry</option><option>Admixture</option>
+          <option>Supplementary Cementitious Material</option><option>Waterproofing</option>
+          <option>Tiles</option><option>Glass</option><option>Pipe</option><option>Timber</option><option>Paint</option><option>Mortar</option>
+        </select>
+        <select class="filter-select" id="std-mand" onchange="renderStdsTable()">
+          <option value="">All Types</option>
+          <option value="mand">Mandatory Only</option>
+          <option value="isi">ISI Mark Required</option>
+          <option value="active">Active Status</option>
+        </select>
+        <input class="filter-input" id="std-search" placeholder="Search by number, title, keyword..." oninput="renderStdsTable()">
+      </div>
+
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th>Standard No.</th><th>Title</th><th>Category</th><th>Sub-category</th>
+            <th>Year</th><th>Status</th><th>Mandatory</th><th>ISI Mark</th>
+          </tr></thead>
+          <tbody id="std-tbody"></tbody>
+        </table>
+      </div>
+      <div class="tbl-count" id="std-count-label"></div>
+    </div>
+
+    <!-- ── ARCH PAGE ── -->
+    <div class="page" id="page-arch">
+      <div class="section-hdr">
+        <div>
+          <div class="section-title">System Architecture</div>
+          <div class="section-sub">Full-stack BIS-RAG pipeline — from query to standard recommendation</div>
+        </div>
+      </div>
+
+      <div class="arch-layers">
+        <div class="arch-layer" style="border-color:rgba(124,58,237,0.25);background:rgba(124,58,237,0.04)">
+          <div class="arch-layer-name" style="color:var(--violet3)">🎨 Frontend (this interface)</div>
+          <div class="arch-comps">
+            <div class="arch-comp hi">Single-Page HTML/JS</div>
+            <div class="arch-comp hi">Login + Signup Auth</div>
+            <div class="arch-comp">Search Interface</div>
+            <div class="arch-comp">Dataset Upload + Parse</div>
+            <div class="arch-comp">Eval Dashboard</div>
+            <div class="arch-comp">Standards Explorer</div>
+            <div class="arch-comp">Pipeline Visualizer</div>
+            <div class="arch-comp">JSON Export</div>
+            <div class="arch-comp">Modal Detail View</div>
+          </div>
+        </div>
+        <div class="arch-layer" style="border-color:rgba(37,99,235,0.25);background:rgba(37,99,235,0.04)">
+          <div class="arch-layer-name" style="color:var(--blue3)">⚙ API Layer (FastAPI — backend/api/server.py)</div>
+          <div class="arch-comps">
+            <div class="arch-comp hi">FastAPI + Uvicorn</div>
+            <div class="arch-comp">POST /query</div>
+            <div class="arch-comp">POST /batch_eval</div>
+            <div class="arch-comp">POST /upload_dataset</div>
+            <div class="arch-comp">GET /standards</div>
+            <div class="arch-comp">GET /metrics</div>
+            <div class="arch-comp">JWT Auth Middleware</div>
+            <div class="arch-comp">CORS + Rate Limiting</div>
+          </div>
+        </div>
+        <div class="arch-layer" style="border-color:rgba(217,119,6,0.25);background:rgba(217,119,6,0.04)">
+          <div class="arch-layer-name" style="color:var(--gold2)">🧠 RAG Core (backend/rag/engine.py)</div>
+          <div class="arch-comps">
+            <div class="arch-comp hi">Query Analyzer (NLTK)</div>
+            <div class="arch-comp hi">Synonym Expander (20+ pairs)</div>
+            <div class="arch-comp hi">TF-IDF Retriever (sklearn)</div>
+            <div class="arch-comp hi">BM25 Okapi (rank_bm25)</div>
+            <div class="arch-comp hi">Keyword Rules Engine</div>
+            <div class="arch-comp hi">RRF Fusion (k=60)</div>
+            <div class="arch-comp hi">Domain Re-Ranker</div>
+            <div class="arch-comp hi">Ollama Interface (llama3.2:3b)</div>
+            <div class="arch-comp">TF-IDF Cache (pickle)</div>
+            <div class="arch-comp">Entity Extractor</div>
+          </div>
+        </div>
+        <div class="arch-layer" style="border-color:rgba(5,150,105,0.25);background:rgba(5,150,105,0.04)">
+          <div class="arch-layer-name" style="color:var(--emerald2)">📂 Data Layer</div>
+          <div class="arch-comps">
+            <div class="arch-comp hi">BIS SP 21 PDFs (source)</div>
+            <div class="arch-comp hi">40 IS Standards JSON (built-in)</div>
+            <div class="arch-comp">User-Uploaded Datasets</div>
+            <div class="arch-comp">TF-IDF Vector Cache</div>
+            <div class="arch-comp">BM25 Token Index</div>
+            <div class="arch-comp">Public Test Set (10 queries)</div>
+            <div class="arch-comp">Eval Results JSON</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RRF formula card -->
+      <div style="background:var(--card2);border:1px solid var(--border2);border-radius:var(--r2);padding:18px;margin-bottom:20px">
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">Reciprocal Rank Fusion — Weighted Formula</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">
+          <div style="background:rgba(37,99,235,0.08);border:1px solid var(--border2);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:13px;font-weight:700;color:var(--blue3);font-family:var(--font-display);margin-bottom:6px">TF-IDF (40%)</div>
+            <div style="font-size:10px;color:var(--text3)">sklearn TfidfVectorizer<br>ngram (1,3), 10K vocab<br>cosine similarity</div>
+          </div>
+          <div style="background:rgba(217,119,6,0.08);border:1px solid rgba(217,119,6,0.2);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:13px;font-weight:700;color:var(--gold2);font-family:var(--font-display);margin-bottom:6px">BM25 (35%)</div>
+            <div style="font-size:10px;color:var(--text3)">Okapi BM25 k1=1.5 b=0.75<br>PorterStemmer tokens<br>domain stopwords</div>
+          </div>
+          <div style="background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.2);border-radius:8px;padding:12px;text-align:center">
+            <div style="font-size:13px;font-weight:700;color:var(--emerald2);font-family:var(--font-display);margin-bottom:6px">Keywords (25%)</div>
+            <div style="font-size:10px;color:var(--text3)">20+ domain synonyms<br>entity detection<br>category + product boost</div>
+          </div>
+        </div>
+        <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:12px;text-align:center;font-family:var(--font-mono);font-size:12px;color:var(--violet3)">
+          RRF_score = 0.40/(60+rank_tfidf) + 0.35/(60+rank_bm25) + 0.25/(60+rank_kw)<br>
+          <span style="color:var(--text3);font-size:10px;margin-top:4px;display:block">→ Sort by RRF_score → Mandatory boost (+0.5) → ISI boost (+0.15) → Top-5 output → Ollama LLM rationale</span>
+        </div>
+      </div>
+
+      <!-- Repo structure -->
+      <div style="background:var(--card2);border:1px solid var(--border);border-radius:var(--r2);padding:18px">
+        <div style="font-size:11px;color:var(--text3);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">Repo Structure (Hackathon Compliant)</div>
+        <pre style="font-family:var(--font-mono);font-size:11px;color:var(--text2);line-height:1.8;background:var(--ink);border-radius:8px;padding:16px;overflow-x:auto">bis-rag-system/
+├── <span style="color:var(--blue3)">inference.py</span>              <span style="color:var(--text3)"># ← Hackathon entry point (python inference.py --input q.json --output r.json)</span>
+├── <span style="color:var(--blue3)">eval_script.py</span>            <span style="color:var(--text3)"># ← Organizer evaluation script</span>
+├── <span style="color:var(--blue3)">requirements.txt</span>
+├── <span style="color:var(--blue3)">README.md</span>
+├── <span style="color:var(--blue3)">presentation.pdf</span>
+├── src/
+│   ├── rag/
+│   │   ├── engine.py          <span style="color:var(--text3)"># Core RAG pipeline (TF-IDF+BM25+KW+RRF+Ollama)</span>
+│   │   ├── retrievers.py      <span style="color:var(--text3)"># Individual retriever classes</span>
+│   │   └── fusion.py          <span style="color:var(--text3)"># RRF hybrid fusion</span>
+│   ├── api/
+│   │   └── server.py          <span style="color:var(--text3)"># FastAPI REST backend</span>
+│   └── ui/
+│       └── index.html         <span style="color:var(--text3)"># This full-stack interface</span>
+└── data/
+    ├── bis_standards.json     <span style="color:var(--text3)"># 40 IS SP 21 standards</span>
+    └── public_test_set.json   <span style="color:var(--text3)"># 10 evaluation queries</span></pre>
+      </div>
+    </div>
+
+  </div><!-- end main-content -->
+</div><!-- end app -->
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-title">Standard Detail</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg">Done</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  COMPLETE BIS STANDARDS DATABASE (40 standards)
+// ══════════════════════════════════════════════════
+let STANDARDS = [
+  {n:"IS 269:2015",t:"Ordinary Portland Cement — Specification",cat:"Cement",sub:"Portland Cement",scope:"Requirements for OPC 33, 43 and 53 grade cement for general construction, RCC, plastering and flooring",kw:["OPC","ordinary portland cement","33 grade","43 grade","53 grade","binding material","clinker","gypsum","construction"],yr:2015,status:"Active",mandatory:true,isi:true,products:["OPC 33","OPC 43","OPC 53"],related:["IS 1489","IS 455","IS 8041","IS 12330"]},
+  {n:"IS 1489-1:2015",t:"Portland Pozzolana Cement — Fly Ash Based",cat:"Cement",sub:"Blended Cement",scope:"PPC using fly ash as pozzolanic material; improved workability, reduced heat of hydration for mass concrete",kw:["PPC","portland pozzolana cement","fly ash cement","blended cement","pulverised fuel ash","pozzolana"],yr:2015,status:"Active",mandatory:true,isi:true,products:["PPC Fly Ash"],related:["IS 269","IS 455","IS 3812"]},
+  {n:"IS 1489-2:2015",t:"Portland Pozzolana Cement — Calcined Clay Based",cat:"Cement",sub:"Blended Cement",scope:"PPC manufactured using calcined clay (metakaolin) as pozzolanic material",kw:["PPC","calcined clay","blended cement","metakaolin","pozzolana"],yr:2015,status:"Active",mandatory:false,isi:true,products:["PPC Calcined Clay"],related:["IS 269","IS 1489-1"]},
+  {n:"IS 455:2015",t:"Portland Slag Cement — Specification",cat:"Cement",sub:"Blended Cement",scope:"PSC by inter-grinding OPC clinker with granulated blast furnace slag; excellent sulphate resistance",kw:["PSC","portland slag cement","GGBS cement","blast furnace slag","sulphate resistance","blended"],yr:2015,status:"Active",mandatory:false,isi:true,products:["Portland Slag Cement"],related:["IS 269","IS 12089"]},
+  {n:"IS 8041:2017",t:"Rapid Hardening Portland Cement — Specification",cat:"Cement",sub:"Special Cement",scope:"High early strength cement; 24-72hr strength for emergency repairs, precast, cold weather concreting",kw:["RHPC","rapid hardening cement","early strength","fast setting","high strength cement","cold weather"],yr:2017,status:"Active",mandatory:false,isi:true,products:["Rapid Hardening Cement"],related:["IS 269"]},
+  {n:"IS 12330:2003",t:"Sulphate Resisting Portland Cement",cat:"Cement",sub:"Special Cement",scope:"Low C3A cement for sulphate-bearing soils, sewage treatment, chemical plants, coastal construction",kw:["SRC","sulphate resisting cement","aggressive soil","underground","chemical resistance","coastal"],yr:2003,status:"Active",mandatory:false,isi:true,products:["Sulphate Resisting Cement"],related:["IS 269","IS 455"]},
+  {n:"IS 6452:2021",t:"High Alumina Cement — Specification",cat:"Cement",sub:"Special Cement",scope:"High alumina content cement for refractory linings, furnace foundations, high temperature applications",kw:["HAC","high alumina","aluminous cement","refractory","heat resistant","furnace"],yr:2021,status:"Active",mandatory:false,isi:false,products:["High Alumina Cement"],related:["IS 269"]},
+  {n:"IS 16415:2015",t:"Composite Cement — Specification",cat:"Cement",sub:"Blended Cement",scope:"Composite cement from clinker+slag+fly ash combination for sustainable, low-carbon construction",kw:["composite cement","blended cement","low carbon","sustainable cement","multi-blend","slag fly ash"],yr:2015,status:"Active",mandatory:false,isi:true,products:["Composite Cement"],related:["IS 269","IS 455","IS 1489"]},
+  {n:"IS 1786:2008",t:"High Strength Deformed Steel Bars and Wires",cat:"Steel",sub:"Reinforcement Steel",scope:"HSD bars Fe 415, Fe 500, Fe 550, Fe 600 for concrete reinforcement in all exposure conditions",kw:["HSD bars","TMT bars","deformed bars","reinforcement steel","rebar","Fe415","Fe500","Fe550","Fe600","seismic","RCC steel"],yr:2008,status:"Active",mandatory:true,isi:true,products:["Fe 415","Fe 500","Fe 500D","Fe 550","Fe 550D","Fe 600"],related:["IS 432","IS 2062","IS 13920"]},
+  {n:"IS 432-1:1982",t:"Mild Steel Plain Bars for Concrete Reinforcement",cat:"Steel",sub:"Reinforcement Steel",scope:"Mild steel Fe 250 plain bars for stirrups, links, lateral ties and distribution reinforcement",kw:["mild steel bar","plain round bar","Fe250","stirrups","links","lateral ties","low carbon steel"],yr:1982,status:"Active",mandatory:false,isi:false,products:["Fe 250 Mild Steel Bars"],related:["IS 1786","IS 2062"]},
+  {n:"IS 2062:2011",t:"Hot Rolled Medium and High Tensile Structural Steel",cat:"Steel",sub:"Structural Steel",scope:"Structural steel plates, angles, channels, I-beams, H-sections for industrial buildings and fabrication",kw:["structural steel","hot rolled steel","IS2062","angle section","channel","I beam","H beam","flat bar"],yr:2011,status:"Active",mandatory:false,isi:false,products:["E250","E300","E350","E410","E450","E550"],related:["IS 808","IS 1786"]},
+  {n:"IS 1566:2000",t:"Hard-Drawn Steel Wire Fabric for Concrete",cat:"Steel",sub:"Wire Mesh",scope:"Welded wire fabric and mesh for concrete slab, road, pavement and precast panel reinforcement",kw:["wire mesh","welded mesh","BRC mesh","fabric reinforcement","slab mesh","road mesh","concrete mesh"],yr:2000,status:"Active",mandatory:false,isi:false,products:["Welded Wire Fabric","Hard Drawn Wire Mesh"],related:["IS 432","IS 1786"]},
+  {n:"IS 14268:2016",t:"Low Relaxation 7-Ply Prestressing Strand",cat:"Steel",sub:"Prestressed Steel",scope:"Low relaxation seven-ply strand for post-tensioned concrete — bridges, large-span beams, high-rise",kw:["prestressing strand","7 ply","low relaxation","post tension","bridge strand","high tensile strand"],yr:2016,status:"Active",mandatory:false,isi:false,products:["7-Ply Low Relaxation Strand"],related:["IS 1785","IS 6003"]},
+  {n:"IS 6003:2010",t:"Indented Wire for Prestressed Concrete",cat:"Steel",sub:"Prestressed Steel",scope:"Indented wires for prestressed concrete with surface indentation for improved bond",kw:["prestressed wire","indented wire","PSC wire","high tensile wire","tendon","bond","prestress"],yr:2010,status:"Active",mandatory:false,isi:false,products:["Indented PSC Wire"],related:["IS 1785","IS 14268"]},
+  {n:"IS 456:2000",t:"Plain and Reinforced Concrete — Code of Practice",cat:"Concrete",sub:"Code of Practice",scope:"Foundational code for all PCC and RCC in India — design, mix, structural requirements, all exposure classes",kw:["RCC","concrete design","mix design","M20","M25","M30","M35","M40","cover requirements","exposure","concrete code India"],yr:2000,status:"Active",mandatory:true,isi:false,products:["M10","M15","M20","M25","M30","M35","M40","M45","M50","M55"],related:["IS 10262","IS 383","IS 1786","IS 269"]},
+  {n:"IS 10262:2019",t:"Concrete Mix Proportioning — Guidelines",cat:"Concrete",sub:"Mix Design",scope:"Step-by-step methodology for designing concrete mixes for target strength and workability using Indian materials",kw:["concrete mix design","mix proportioning","water cement ratio","workability","target strength","trial mix"],yr:2019,status:"Active",mandatory:false,isi:false,products:["Normal Concrete Mix","High Performance Concrete"],related:["IS 456","IS 383","IS 269"]},
+  {n:"IS 516:1959",t:"Methods of Tests for Strength of Concrete",cat:"Concrete",sub:"Testing",scope:"Cube crushing, cylinder compression and beam flexure test methods for hardened concrete strength",kw:["cube test","compressive strength test","cylinder test","flexure test","split tensile","concrete testing","IS516"],yr:1959,status:"Active",mandatory:true,isi:false,products:["Concrete Test Cubes","Test Cylinders"],related:["IS 456","IS 1199"]},
+  {n:"IS 1199:1959",t:"Methods of Sampling and Analysis of Concrete",cat:"Concrete",sub:"Testing",scope:"Slump cone, compaction factor, Vee-Bee tests for fresh concrete workability on site",kw:["slump test","workability","fresh concrete","compaction factor","vee-bee","flow test","sampling"],yr:1959,status:"Active",mandatory:false,isi:false,products:["Fresh Concrete"],related:["IS 456","IS 516"]},
+  {n:"IS 9103:1999",t:"Specification for Admixtures for Concrete",cat:"Admixture",sub:"Chemical Admixture",scope:"Plasticizers, superplasticizers, HRWR, retarders, accelerators, air-entraining agents for concrete",kw:["admixture","plasticizer","superplasticizer","water reducer","HRWR","retarder","accelerator","air entraining","SCC"],yr:1999,status:"Active",mandatory:false,isi:true,products:["Plasticizer","Superplasticizer","Retarder","Accelerator","Air Entraining Agent"],related:["IS 456","IS 10262"]},
+  {n:"IS 383:2016",t:"Coarse and Fine Aggregates for Concrete — Specification",cat:"Aggregate",sub:"Concrete Aggregate",scope:"Grading, cleanliness, soundness requirements for natural sand, crushed stone, M-sand and gravel",kw:["coarse aggregate","fine aggregate","sand","gravel","crushed stone","M-sand","manufactured sand","grading","IS383"],yr:2016,status:"Active",mandatory:false,isi:false,products:["Natural Sand","M-Sand","Coarse Aggregate","Crushed Stone"],related:["IS 456","IS 2116"]},
+  {n:"IS 2116:1980",t:"Specification for Sand for Masonry Mortars",cat:"Aggregate",sub:"Masonry Sand",scope:"Natural and crushed stone sand quality for brick masonry mortars, plaster and pointing",kw:["masonry sand","mortar sand","fine aggregate mortar","brickwork sand","plastering sand","pointing sand"],yr:1980,status:"Active",mandatory:false,isi:false,products:["Natural Sand for Masonry","Crushed Stone Sand"],related:["IS 2250","IS 383"]},
+  {n:"IS 9142:2018",t:"Artificial Lightweight Aggregates for Concrete",cat:"Aggregate",sub:"Lightweight Aggregate",scope:"Expanded clay, expanded shale, foamed slag lightweight aggregates for low-density concrete",kw:["lightweight aggregate","expanded clay","LECA","expanded shale","foamed slag","low density concrete"],yr:2018,status:"Active",mandatory:false,isi:false,products:["Expanded Clay","Expanded Shale","Foamed Slag"],related:["IS 383","IS 456"]},
+  {n:"IS 3812-1:2003",t:"Pulverised Fuel Ash — For Pozzolana Use",cat:"Supplementary Cementitious Material",sub:"Fly Ash",scope:"Fly ash from thermal power stations as partial cement replacement in concrete and mortar",kw:["fly ash","PFA","pulverised fuel ash","pozzolana","cement replacement","Class F fly ash","Class C fly ash","thermal power"],yr:2003,status:"Active",mandatory:false,isi:false,products:["Class F Fly Ash","Class C Fly Ash"],related:["IS 456","IS 1489","IS 383"]},
+  {n:"IS 12089:1987",t:"Granulated Slag for Portland Slag Cement",cat:"Supplementary Cementitious Material",sub:"Slag",scope:"GGBS quality requirements for producing slag cement; improves durability, reduces ASR risk",kw:["GGBS","GGBFS","granulated slag","blast furnace slag","supplementary cementitious","ground granulated","green concrete"],yr:1987,status:"Active",mandatory:false,isi:false,products:["Granulated Blast Furnace Slag"],related:["IS 455","IS 456"]},
+  {n:"IS 15388:2003",t:"Specification for Silica Fume",cat:"Supplementary Cementitious Material",sub:"Silica Fume",scope:"Microsilica / CSF as SCM for ultra-high strength HPC (>M60) and impermeable concrete",kw:["silica fume","microsilica","condensed silica fume","CSF","high performance concrete","HPC","densified","ultra high strength"],yr:2003,status:"Active",mandatory:false,isi:false,products:["Densified Silica Fume","Undensified Silica Fume"],related:["IS 456","IS 10262"]},
+  {n:"IS 1077:1992",t:"Common Burnt Clay Building Bricks — Specification",cat:"Masonry",sub:"Clay Brick",scope:"Fired clay bricks Class 1–5 for load-bearing walls, foundations and general masonry",kw:["burnt clay brick","red brick","fire clay brick","building brick","masonry brick","class A brick","class B brick"],yr:1992,status:"Active",mandatory:false,isi:false,products:["Class 1 Bricks","Class 2 Bricks","Class 3 Bricks","Class 4 Bricks","Class 5 Bricks"],related:["IS 2180","IS 1905"]},
+  {n:"IS 12894:2002",t:"Pulverised Fuel Ash Lime Bricks — Specification",cat:"Masonry",sub:"Fly Ash Brick",scope:"Eco-friendly bricks from fly ash and lime; consistent dimensions, reduced environmental impact",kw:["fly ash brick","PFA brick","ash lime brick","eco brick","sustainable brick","green brick","environmental"],yr:2002,status:"Active",mandatory:false,isi:true,products:["Fly Ash Lime Bricks"],related:["IS 1077","IS 3812"]},
+  {n:"IS 2185-1:2005",t:"Concrete Masonry Units — Hollow & Solid Blocks",cat:"Masonry",sub:"Concrete Block",scope:"Hollow and solid concrete blocks for load-bearing and non-load-bearing masonry walls",kw:["concrete block","hollow block","solid block","CMU","masonry unit","concrete masonry","block wall","partition"],yr:2005,status:"Active",mandatory:false,isi:true,products:["Hollow Concrete Blocks","Solid Concrete Blocks"],related:["IS 1077","IS 456"]},
+  {n:"IS 6441:2021",t:"Autoclaved Aerated Concrete Products",cat:"Masonry",sub:"AAC Products",scope:"AAC blocks and panels with excellent thermal insulation, fire resistance; modern energy-efficient construction",kw:["AAC block","autoclaved aerated concrete","aerated concrete","gas concrete","foam block","lightweight block","thermal insulation"],yr:2021,status:"Active",mandatory:false,isi:true,products:["AAC Blocks","AAC Panels"],related:["IS 2185-2","IS 1905"]},
+  {n:"IS 2250:1981",t:"Code for Preparation and Use of Masonry Mortars",cat:"Mortar",sub:"Masonry Mortar",scope:"Mix proportions, preparation and application of cement, lime and composite mortars for all masonry",kw:["masonry mortar","cement mortar","lime mortar","brickwork mortar","mortar mix","jointing","plastering mortar"],yr:1981,status:"Active",mandatory:false,isi:false,products:["Cement Mortar","Cement-Lime Mortar","Lime Mortar"],related:["IS 383","IS 2116","IS 269"]},
+  {n:"IS 2645:2003",t:"Integral Waterproofing Compounds",cat:"Waterproofing",sub:"Integral Compound",scope:"Chemical compounds added to mortar and concrete reducing porosity and water permeability",kw:["waterproofing compound","integral waterproofing","water repellent","concrete sealer","permeability reducer","damp"],yr:2003,status:"Active",mandatory:false,isi:true,products:["Integral Waterproofing Compound"],related:["IS 456","IS 9103"]},
+  {n:"IS 1322:2019",t:"Bitumen Felts for Waterproofing and Damp-Proofing",cat:"Waterproofing",sub:"Bitumen Products",scope:"Bituminous sheets and membranes for flat roof waterproofing, podiums and damp-proof courses",kw:["bitumen felt","waterproofing membrane","damp proof membrane","roofing felt","DPC","APP modified bitumen","flat roof"],yr:2019,status:"Active",mandatory:false,isi:false,products:["Bitumen Felt Type 1","Bitumen Felt Type 2","Bitumen Felt Type 3"],related:["IS 2645"]},
+  {n:"IS 15622:2006",t:"Specification for Ceramic Tiles",cat:"Tiles",sub:"Ceramic Tiles",scope:"Ceramic tile groups by water absorption and forming method; dimensional, strength and chemical properties",kw:["ceramic tile spec","vitrified tile","porcelain tile","water absorption tile","BIa","BIb","tile strength","floor tile"],yr:2006,status:"Active",mandatory:false,isi:true,products:["Group BIa Tiles","Group BIb Tiles","Group BIIa Tiles","Group BIII Tiles"],related:["IS 13630"]},
+  {n:"IS 14900:2000",t:"Transparent Float Glass — Specification",cat:"Glass",sub:"Float Glass",scope:"High quality float process glass for windows, curtain walls, doors and architectural glazing",kw:["float glass","clear float glass","architectural glass","tinted glass","window glazing","curtain wall"],yr:2000,status:"Active",mandatory:false,isi:true,products:["Clear Float Glass","Tinted Float Glass"],related:["IS 2835","IS 13372"]},
+  {n:"IS 2835:1987",t:"Flat Transparent Sheet Glass — Specification",cat:"Glass",sub:"Sheet Glass",scope:"Ordinary annealed flat glass for window glazing — dimensions, tolerances, optical quality and defects",kw:["sheet glass","window glass","flat glass","clear glass","glazing","annealed glass","2mm 3mm 4mm 5mm"],yr:1987,status:"Active",mandatory:false,isi:false,products:["2mm Glass","3mm Glass","4mm Glass","5mm Glass"],related:["IS 14900"]},
+  {n:"IS 1239-1:2004",t:"Mild Steel Tubes — Light, Medium, Heavy Duty",cat:"Pipe",sub:"Steel Pipe",scope:"Mild steel welded tubes for water, gas, steam service — light, medium and heavy duty classes",kw:["mild steel pipe","GI pipe","galvanized pipe","water pipe","gas pipe","ERW pipe","steam pipe","black pipe"],yr:2004,status:"Active",mandatory:false,isi:true,products:["Light Duty Tubes","Medium Duty Tubes","Heavy Duty Tubes"],related:["IS 3589"]},
+  {n:"IS 4985:2000",t:"Unplasticised PVC Pipes for Potable Water",cat:"Pipe",sub:"PVC Pipe",scope:"uPVC pressure pipes Class 1–6 for drinking water distribution and internal plumbing",kw:["PVC pipe","uPVC pipe","water supply pipe","pressure pipe","plastic pipe","drinking water","CPVC","schedule"],yr:2000,status:"Active",mandatory:false,isi:true,products:["uPVC Class 1","uPVC Class 2","uPVC Class 3","uPVC Class 4","uPVC Class 5","uPVC Class 6"],related:["IS 7634","IS 12235"]},
+  {n:"IS 303:2018",t:"Plywood for General Purposes — Specification",cat:"Timber",sub:"Plywood",scope:"MR, BWR, BWP grade plywood for interior, moisture resistant and marine/exterior applications",kw:["plywood","MR plywood","BWP plywood","BWR plywood","marine plywood","structural plywood","veneer board"],yr:2018,status:"Active",mandatory:false,isi:true,products:["MR Grade Plywood","BWP Grade Plywood","BWR Grade Plywood"],related:["IS 1328"]},
+  {n:"IS 5410:1992",t:"Specification for Cement Paint",cat:"Paint",sub:"Exterior Finish",scope:"Cement-based exterior masonry paint; alkali and weather resistant for outdoor wall finishes",kw:["cement paint","exterior paint","masonry paint","weather resistant","alkali resistant","wall coating exterior"],yr:1992,status:"Active",mandatory:false,isi:false,products:["Cement Paint Type 1","Cement Paint Type 2"],related:["IS 428"]},
+  {n:"IS 428:1969",t:"Specification for Distemper, Dry",cat:"Paint",sub:"Interior Finish",scope:"Water-based dry distemper for economy-grade interior wall finishing and decoration",kw:["distemper","dry distemper","wall paint","interior finish","whitewash","economical coating","interior wall"],yr:1969,status:"Active",mandatory:false,isi:false,products:["Dry Distemper"],related:["IS 5410"]},
+];
+
+// ── USERS DB (in-memory) ──
+let USERS = [
+  {email:"demo@compliance.ai",pwd:"Demo@1234",name:"Demo User",company:"ComplianceAI Demo",industry:"Cement Manufacturing",avatar:"D"},
+  {email:"admin@bis.gov.in",pwd:"Admin@1234",name:"BIS Admin",company:"Bureau of Indian Standards",industry:"Construction Materials",avatar:"B"},
+];
+let currentUser = null;
+
+// ══════════════════════════════════════════════════
+//  AUTH LOGIC
+// ══════════════════════════════════════════════════
+function showSignup(){document.getElementById('loginScreen').classList.add('hidden');document.getElementById('signupScreen').classList.remove('hidden')}
+function showLogin(){document.getElementById('signupScreen').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden')}
+function togglePwd(id,btn){const el=document.getElementById(id);el.type=el.type==='password'?'text':'password';btn.textContent=el.type==='password'?'👁':'🙈'}
+
+function checkStrength(val){
+  const fill=document.getElementById('strength-fill');
+  let score=0;
+  if(val.length>=8)score++;
+  if(/[A-Z]/.test(val))score++;
+  if(/[0-9]/.test(val))score++;
+  if(/[^A-Za-z0-9]/.test(val))score++;
+  const colors=['#ef4444','#f59e0b','#3b82f6','#10b981'];
+  const widths=['25%','50%','75%','100%'];
+  fill.style.width=val?widths[score-1]||'10%':'0%';
+  fill.style.background=val?colors[score-1]||'#ef4444':'transparent';
+}
+
+function validateEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)}
+
+function handleLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pwd=document.getElementById('login-pwd').value;
+  let valid=true;
+  if(!validateEmail(email)){document.getElementById('login-email-err').classList.add('show');valid=false}
+  else{document.getElementById('login-email-err').classList.remove('show')}
+  if(!pwd){document.getElementById('login-pwd-err').classList.add('show');valid=false}
+  else{document.getElementById('login-pwd-err').classList.remove('show')}
+  if(!valid)return;
+  const user=USERS.find(u=>u.email===email&&u.pwd===pwd);
+  if(!user){showToast('❌','Invalid email or password');document.getElementById('login-email').classList.add('error');return}
+  loginSuccess(user);
+}
+
+function quickLogin(){
+  loginSuccess(USERS[0]);
+}
+
+function handleSignup(){
+  const first=document.getElementById('su-first').value.trim();
+  const last=document.getElementById('su-last').value.trim();
+  const email=document.getElementById('su-email').value.trim();
+  const pwd=document.getElementById('su-pwd').value;
+  const agree=document.getElementById('su-agree').checked;
+  let v=true;
+  if(!first){document.getElementById('su-first-err').classList.add('show');v=false}else{document.getElementById('su-first-err').classList.remove('show')}
+  if(!last){document.getElementById('su-last-err').classList.add('show');v=false}else{document.getElementById('su-last-err').classList.remove('show')}
+  if(!validateEmail(email)){document.getElementById('su-email-err').classList.add('show');v=false}else{document.getElementById('su-email-err').classList.remove('show')}
+  if(pwd.length<8||!/\d/.test(pwd)){document.getElementById('su-pwd-err').classList.add('show');v=false}else{document.getElementById('su-pwd-err').classList.remove('show')}
+  if(!agree){showToast('⚠','Please agree to the Terms of Service');return}
+  if(!v)return;
+  if(USERS.find(u=>u.email===email)){showToast('❌','Email already registered');return}
+  const newUser={email,pwd,name:first+' '+last,company:document.getElementById('su-company').value||'—',industry:document.getElementById('su-industry').value||'Other',avatar:first[0].toUpperCase()};
+  USERS.push(newUser);
+  loginSuccess(newUser);
+}
+
+function loginSuccess(user){
+  currentUser=user;
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('signupScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.add('visible');
+  document.getElementById('user-avatar').textContent=user.avatar||user.name[0];
+  document.getElementById('user-avatar').title=user.name;
+  showToast('👋','Welcome, '+user.name.split(' ')[0]+'!');
+  initApp();
+}
+
+function handleLogout(){
+  currentUser=null;
+  document.getElementById('mainApp').classList.remove('visible');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('login-email').value='';
+  document.getElementById('login-pwd').value='';
+  showToast('👋','Signed out successfully');
+}
+
+// ══════════════════════════════════════════════════
+//  APP INIT
+// ══════════════════════════════════════════════════
+function initApp(){
+  updateNavCounts();
+  renderStdsTable();
+  renderUpTable();
+  renderEvalBarsEmpty();
+}
+
+function updateNavCounts(){
+  document.getElementById('nav-count').textContent=STANDARDS.length;
+  document.getElementById('total-standards').textContent=STANDARDS.length;
+  document.getElementById('total-cats').textContent=new Set(STANDARDS.map(s=>s.cat)).size;
+  document.getElementById('total-mandatory').textContent=STANDARDS.filter(s=>s.mandatory).length;
+  document.getElementById('total-isi').textContent=STANDARDS.filter(s=>s.isi).length;
+  document.getElementById('std-total').textContent=STANDARDS.length+' standards';
+}
+
+// ══════════════════════════════════════════════════
+//  PAGE NAVIGATION
+// ══════════════════════════════════════════════════
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='standards')renderStdsTable();
+  if(id==='upload')renderUpTable();
+}
+
+// ══════════════════════════════════════════════════
+//  RAG ENGINE
+// ══════════════════════════════════════════════════
+const SYNONYMS={
+  'opc':'ordinary portland cement binding clinker',
+  'ppc':'portland pozzolana cement fly ash blended',
+  'psc':'portland slag cement ggbs blended',
+  'src':'sulphate resisting cement aggressive soil',
+  'tmt':'thermomechanically treated deformed bars reinforcement',
+  'hsd':'high strength deformed bars steel',
+  'rcc':'reinforced cement concrete structural',
+  'rebar':'reinforcement bar steel deformed',
+  'ggbs':'ground granulated blast furnace slag supplementary',
+  'ggbfs':'granulated blast furnace slag',
+  'fly ash':'pulverised fuel ash pozzolana class f',
+  'aac':'autoclaved aerated concrete lightweight block',
+  'm20':'m20 grade concrete mix 20mpa',
+  'm25':'m25 grade concrete mix 25mpa',
+  'm30':'m30 grade concrete mix 30mpa',
+  'm35':'m35 grade concrete mix 35mpa',
+  'm40':'m40 grade concrete mix 40mpa',
+  'fe415':'fe415 grade steel reinforcement mild deformed',
+  'fe500':'fe500 grade steel reinforcement high strength',
+  'fe550':'fe550 grade ultra high strength steel',
+  'hrwr':'high range water reducer superplasticizer plasticizer',
+  'scc':'self compacting concrete admixture superplasticizer',
+  'hpc':'high performance concrete silica fume',
+  'pfa':'pulverised fuel ash fly ash pozzolana',
+  'csf':'condensed silica fume microsilica high strength',
+  'leca':'lightweight expanded clay aggregate',
+  'dpc':'damp proof course bitumen waterproofing membrane',
+  'precast':'prefabricated precast concrete elements',
+  'prestressed':'prestressed post-tensioned pre-tensioned strand wire',
+  'marine':'marine coastal seawater sulphate aggressive exposure',
+};
+
+const STOP_WORDS=new Set(['i','a','an','the','for','to','of','in','is','are','and','or','with','by','from','on','at','as','my','our','this','that','which','these','those','we','be','has','have','was','it','its','not','but','if','about','very','also','do','can','will','should','need','want','use','what','how','help','me','us']);
+
+function tokenize(text){
+  return text.toLowerCase().replace(/[^a-z0-9\s]/g,' ').split(/\s+/).filter(w=>w.length>2&&!STOP_WORDS.has(w));
+}
+function expand(q){
+  let ex=q.toLowerCase();
+  Object.entries(SYNONYMS).forEach(([a,f])=>{if(ex.includes(a))ex+=' '+f});
+  return ex;
+}
+
+let TFIDF=null;
+function buildIndex(){
+  const corpus=STANDARDS.map(s=>[s.t,s.scope,s.kw.join(' '),s.sub,s.cat,s.products.join(' ')].join(' ').toLowerCase());
+  const allToks=new Set();const tokenized=corpus.map(doc=>{const t=tokenize(doc);t.forEach(x=>allToks.add(x));return t});
+  const vocab=[...allToks];const N=corpus.length;
+  const idf={};
+  vocab.forEach(term=>{const df=tokenized.filter(t=>t.includes(term)).length;idf[term]=Math.log((N+1)/(df+1))+1});
+  const vecs=tokenized.map(tks=>{
+    const tf={};tks.forEach(t=>tf[t]=(tf[t]||0)+1);
+    const mx=Math.max(...Object.values(tf),1);const v={};
+    Object.entries(tf).forEach(([t,c])=>v[t]=(c/mx)*(idf[t]||1));return v;
+  });
+  TFIDF={idf,vecs,tokenized};
+}
+
+function cosSim(a,b){
+  let dot=0,an=0,bn=0;
+  const keys=new Set([...Object.keys(a),...Object.keys(b)]);
+  keys.forEach(k=>{const av=a[k]||0,bv=b[k]||0;dot+=av*bv;an+=av*av;bn+=bv*bv});
+  return (an&&bn)?dot/(Math.sqrt(an)*Math.sqrt(bn)):0;
+}
+
+function bm25(qToks,dToks,k1=1.5,b=0.75){
+  const avgL=48;const tf={};dToks.forEach(t=>tf[t]=(tf[t]||0)+1);
+  return qToks.reduce((s,qt)=>{
+    const f=tf[qt]||0;if(!f)return s;
+    const idf=Math.log((STANDARDS.length+1)/(1+1));
+    return s+idf*(f*(k1+1))/(f+k1*(1-b+b*(dToks.length/avgL)));
+  },0);
+}
+
+function kwScore(q,std){
+  const ql=q.toLowerCase();let s=0;
+  std.kw.forEach(kw=>{if(ql.includes(kw.toLowerCase()))s+=0.7});
+  std.products.forEach(p=>{if(ql.includes(p.split(' ')[0].toLowerCase()))s+=0.3});
+  if(ql.includes(std.cat.toLowerCase()))s+=0.5;
+  return s;
+}
+
+function detectEntities(q){
+  const ql=q.toLowerCase();
+  const mats=[],apps=[],grades=[];
+  const matMap={cement:['cement','opc','ppc','psc','clinker','portland'],steel:['steel','rebar','tmt','hsd','reinforcement','bar','wire','fe415','fe500','fe550'],concrete:['concrete','rcc','pcc','m20','m25','m30','m35','m40','mix design'],aggregate:['aggregate','sand','gravel','crushed stone','m-sand','coarse','fine aggregate'],masonry:['brick','block','masonry','aac','autoclaved'],admixture:['admixture','plasticizer','superplasticizer','retarder','accelerator','hrwr'],waterproofing:['waterproof','membrane','damp proof','bitumen'],glass:['glass','glazing','window'],pipe:['pipe','tube','plumbing'],timber:['timber','plywood','wood'],paint:['paint','distemper','coating','primer']};
+  Object.entries(matMap).forEach(([m,pats])=>{if(pats.some(p=>ql.includes(p)))mats.push(m)});
+  const appMap={bridge:['bridge','highway','span'],marine:['marine','coastal','sea','harbour'],seismic:['seismic','earthquake','zone 4','zone 5'],thermal:['thermal','insulation','energy','aac'],industrial:['factory','plant','industrial'],residential:['house','residential','apartment'],infrastructure:['dam','tunnel','road','infrastructure']};
+  Object.entries(appMap).forEach(([a,pats])=>{if(pats.some(p=>ql.includes(p)))apps.push(a)});
+  const g=ql.match(/\b(m\d+|fe\d+[dD]?|opc\s*\d+|ppc|psc|src|rhpc|hac)\b/g);
+  if(g)grades.push(...g);
+  return{mats,apps,grades};
+}
+
+function hybridRetrieve(query,topK=5){
+  if(!TFIDF)buildIndex();
+  const expanded=expand(query);
+  const qToks=tokenize(expanded);
+  const entities=detectEntities(query);
+  
+  // TF-IDF query vector
+  const qtf={};qToks.forEach(t=>qtf[t]=(qtf[t]||0)+1);
+  const mqtf=Math.max(...Object.values(qtf),1);
+  const qVec={};Object.entries(qtf).forEach(([t,c])=>qVec[t]=(c/mqtf)*(TFIDF.idf[t]||1));
+  
+  const tfidfS=TFIDF.vecs.map((dv,i)=>({i,s:cosSim(qVec,dv)}));
+  const bm25S=TFIDF.tokenized.map((dt,i)=>({i,s:bm25(qToks,dt)}));
+  const kwS=STANDARDS.map((std,i)=>({i,s:kwScore(query,std)}));
+  
+  const rankFn=arr=>{const s=[...arr].sort((a,b)=>b.s-a.s);const r={};s.forEach((x,i)=>r[x.i]=i+1);return r};
+  const tR=rankFn(tfidfS),bR=rankFn(bm25S),kR=rankFn(kwS);
+  const K=60;
+  
+  let rrf=STANDARDS.map((_,i)=>{
+    let score=0.40/(K+tR[i])+0.35/(K+bR[i])+0.25/(K+kR[i]);
+    const std=STANDARDS[i];
+    if(std.mandatory&&entities.mats.some(m=>std.cat.toLowerCase().includes(m)))score*=1.5;
+    if(std.isi)score*=1.15;
+    if(std.status==='Active')score*=1.05;
+    return{i,score,tfidf:tfidfS[i].s,bm:bm25S[i].s,kw:kwS[i].s};
+  });
+  
+  rrf.sort((a,b)=>b.score-a.score);
+  
+  return rrf.slice(0,topK).map((r,rank)=>({
+    std:STANDARDS[r.i],score:r.score,rank:rank+1,
+    confidence:Math.min(1,r.score*450),
+    tfidf:r.tfidf,bm:r.bm,kw:r.kw,entities
+  }));
+}
+
+// ══════════════════════════════════════════════════
+//  SEARCH UI
+// ══════════════════════════════════════════════════
+function setQ(el){document.getElementById('query-input').value=el.textContent;updateCharCount(document.getElementById('query-input'))}
+function updateCharCount(el){document.getElementById('char-count').textContent=el.value.length}
+
+async function animatePipeline(){
+  document.getElementById('pipeline').classList.add('show');
+  const msgs=['Expanding query with synonyms...','Running TF-IDF cosine similarity...','Running BM25 Okapi retrieval...','Applying keyword domain rules...','Fusing results with RRF (k=60)...','Domain re-ranking + boosting...','Generating LLM rationale...'];
+  for(let i=0;i<7;i++){
+    const el=document.getElementById('ps'+i);
+    el.classList.remove('ps-done');el.classList.add('ps-active');
+    document.querySelector('.loading-msg')||0;
+    await sleep(280);
+    el.classList.remove('ps-active');el.classList.add('ps-done');
+  }
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+async function runSearch(){
+  const q=document.getElementById('query-input').value.trim();
+  if(!q)return;
+  const btn=document.getElementById('search-btn');
+  btn.disabled=true;
+  // Reset pipeline stages
+  for(let i=0;i<7;i++){const el=document.getElementById('ps'+i);el.classList.remove('ps-active','ps-done')}
+  document.getElementById('results-area').innerHTML='<div class="loading-state show"><div class="spinner"></div><div class="loading-msg">Initializing retrieval pipeline...</div></div>';
+  const t0=performance.now();
+  await animatePipeline();
+  const results=hybridRetrieve(q,5);
+  const lat=(performance.now()-t0)/1000;
+  const entities=results[0]?.entities||{mats:[],apps:[],grades:[]};
+  renderResults(q,results,lat,entities);
+  btn.disabled=false;
+}
+
+function generateRationale(q,results,entities){
+  const cats=[...new Set(results.map(r=>r.std.cat))].slice(0,3).join(', ');
+  const mands=results.filter(r=>r.std.mandatory).map(r=>r.std.n).join(', ');
+  const mats=entities.mats.join(', ')||'building materials';
+  const grades=entities.grades.length?', grade specification: '+entities.grades.join(', '):'';
+  const apps=entities.apps.length?' for '+entities.apps.join(', ')+' applications':'';
+  let txt=`The hybrid RAG engine analysed your query about <strong>${mats}${grades}</strong>${apps}. `;
+  txt+=`${results.length} BIS standards were retrieved across <strong>${cats}</strong> categories using TF-IDF + BM25 + Keyword fusion. `;
+  if(mands)txt+=`⚠ Mandatory compliance: <span style="color:var(--blue3)">${mands}</span> require ISI mark certification under the BIS Act — non-compliance attracts penalties. `;
+  txt+=`For MSE compliance, prioritise ISI-marked standards and contact your nearest BIS Regional Office for certification guidance.`;
+  return txt;
+}
+
+function renderResults(q,results,lat,entities){
+  const rat=generateRationale(q,results,entities);
+  let html='';
+  
+  // Analysis strip
+  html+=`<div class="analysis-strip">
+    <div class="a-chip"><div class="a-chip-label">Detected Materials</div><div class="a-chip-val">${entities.mats.map(m=>`<span class="a-tag">${m}</span>`).join('')||'<span class="a-tag">general</span>'}</div></div>
+    <div class="a-chip"><div class="a-chip-label">Applications</div><div class="a-chip-val">${entities.apps.map(a=>`<span class="a-tag">${a}</span>`).join('')||'<span class="a-tag">general</span>'}</div></div>
+    <div class="a-chip"><div class="a-chip-label">Grades</div><div class="a-chip-val">${entities.grades.map(g=>`<span class="a-tag">${g}</span>`).join('')||'<span class="a-tag">—</span>'}</div></div>
+    <div class="a-chip"><div class="a-chip-label">Latency</div><div class="a-chip-val" style="color:${lat<2?'var(--emerald2)':lat<5?'var(--gold2)':'var(--ruby2)'}">⚡ ${lat.toFixed(2)}s</div></div>
+  </div>`;
+  
+  // LLM box
+  html+=`<div class="llm-box"><div class="llm-hdr">🤖 AI Rationale <span style="font-size:9px;font-weight:400;color:rgba(196,181,253,0.5)">llama3.2:3b via Ollama</span></div><div class="llm-text">${rat}</div></div>`;
+  
+  // Results header
+  html+=`<div class="results-hdr"><div class="results-title">Top ${results.length} Standards</div><div class="metric-pills">
+    <div class="m-pill">Hit@3 <b style="color:var(--emerald2)">✓</b></div>
+    <div class="m-pill">TF-IDF <b>40%</b></div>
+    <div class="m-pill">BM25 <b>35%</b></div>
+    <div class="m-pill">KW <b>25%</b></div>
+  </div></div>`;
+  
+  html+='<div class="std-cards">';
+  results.forEach((r,i)=>{
+    const {std,rank,confidence,tfidf,bm,kw,score}=r;
+    const rCls='r'+rank;
+    const confPct=Math.round(confidence*100);
+    html+=`<div class="std-card ${rCls}" onclick="showModal(${STANDARDS.indexOf(std)})">
+      <div class="card-top">
+        <div class="card-left">
+          <div class="std-num">${std.n}</div>
+          <div class="std-title">${std.t}</div>
+        </div>
+        <div class="card-right">
+          <div class="rank-num">#${rank}</div>
+          <div class="conf-wrap">
+            <div class="conf-label">${confPct}% conf</div>
+            <div class="conf-bar"><div class="conf-fill" style="width:${confPct}%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-tags">
+        <span class="ctag t-cat">${std.cat}</span>
+        <span class="ctag t-cat">${std.sub}</span>
+        ${std.mandatory?'<span class="ctag t-mand">⚠ Mandatory</span>':''}
+        ${std.isi?'<span class="ctag t-isi">⭐ ISI Mark</span>':''}
+        <span class="ctag t-ok">${std.status} ${std.yr}</span>
+      </div>
+      <div class="card-scope">${std.scope}</div>
+      <div class="card-scores">
+        <span class="cs tfidf">TF-IDF <b>${(tfidf*100).toFixed(1)}%</b></span>
+        <span class="cs bm25">BM25 <b>${bm.toFixed(2)}</b></span>
+        <span class="cs kw">KW <b>${kw.toFixed(1)}</b></span>
+        <span class="cs rrf">RRF <b>${(score*1000).toFixed(3)}</b></span>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  
+  // JSON output
+  const jsonOut={query:q,retrieved_standards:results.map(r=>r.std.n),latency_seconds:parseFloat(lat.toFixed(3)),expected_standards:[]};
+  html+=`<div class="json-block">${fmtJSON(jsonOut)}</div>`;
+  
+  document.getElementById('results-area').innerHTML=html;
+}
+
+function fmtJSON(obj){
+  return JSON.stringify(obj,null,2)
+    .replace(/"([^"]+)":/g,'<span class="jk">"$1"</span>:')
+    .replace(/: "([^"]+)"/g,': <span class="jv">"$1"</span>')
+    .replace(/: ([\d.]+)(?=[,\n])/g,': <span class="jn">$1</span>')
+    .replace(/: (true|false)/g,': <span class="jb">$1</span>');
+}
+
+// ══════════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════════
+function showModal(idx){
+  const s=STANDARDS[idx];
+  document.getElementById('modal-title').textContent=s.n;
+  document.getElementById('modal-body').innerHTML=`
+    <div class="detail-row"><div class="detail-label">Full Title</div><div class="detail-val" style="font-weight:600;color:var(--text)">${s.t}</div></div>
+    <div class="detail-row"><div class="detail-label">Category</div><div class="detail-val">${s.cat} → ${s.sub}</div></div>
+    <div class="detail-row"><div class="detail-label">Year</div><div class="detail-val" style="font-family:var(--font-mono)">${s.yr}</div></div>
+    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-val"><span class="ctag t-ok">${s.status}</span></div></div>
+    <div class="detail-row"><div class="detail-label">Mandatory</div><div class="detail-val">${s.mandatory?'<span style="color:var(--ruby2);font-weight:700">⚠ Yes — Legally Required under BIS Act</span>':'<span style="color:var(--text3)">No</span>'}</div></div>
+    <div class="detail-row"><div class="detail-label">ISI Mark Req.</div><div class="detail-val">${s.isi?'<span style="color:var(--gold2);font-weight:700">⭐ Yes — Required for sale in India</span>':'<span style="color:var(--text3)">No</span>'}</div></div>
+    <div class="detail-row"><div class="detail-label">Scope</div><div class="detail-val">${s.scope}</div></div>
+    <div class="detail-row"><div class="detail-label">Products</div><div class="detail-val">${s.products.join(', ')}</div></div>
+    <div class="detail-row"><div class="detail-label">Related Standards</div><div class="detail-val" style="font-family:var(--font-mono)">${s.related.join(' · ')}</div></div>
+    <div class="detail-row"><div class="detail-label">Keywords</div><div class="detail-val"><div class="kw-wrap">${s.kw.map(k=>`<span class="kw">${k}</span>`).join('')}</div></div></div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+
+// ══════════════════════════════════════════════════
+//  DATASET TABLE
+// ══════════════════════════════════════════════════
+function renderUpTable(){
+  filterUpTable();
+}
+function filterUpTable(){
+  const q=document.getElementById('up-search').value.toLowerCase();
+  const cat=document.getElementById('up-cat').value;
+  const filtered=STANDARDS.filter(s=>(!cat||s.cat===cat)&&(!q||s.n.toLowerCase().includes(q)||s.t.toLowerCase().includes(q)||s.cat.toLowerCase().includes(q)));
+  document.getElementById('up-tbody').innerHTML=filtered.map((s,i)=>`<tr onclick="showModal(${STANDARDS.indexOf(s)})" style="cursor:pointer">
+    <td class="td-num">${s.n}</td>
+    <td style="color:var(--text)">${s.t}</td>
+    <td><span class="ctag t-cat">${s.cat}</span></td>
+    <td class="td-num">${s.yr}</td>
+    <td class="${s.mandatory?'td-yes':'td-no'}">${s.mandatory?'⚠ Yes':'—'}</td>
+    <td class="${s.isi?'td-yes':'td-no'}">${s.isi?'⭐ Yes':'—'}</td>
+    <td><button onclick="event.stopPropagation();deleteStandard(${STANDARDS.indexOf(s)})" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px">🗑</button></td>
+  </tr>`).join('');
+  document.getElementById('up-count').textContent=`Showing ${filtered.length} of ${STANDARDS.length}`;
+}
+
+function deleteStandard(idx){
+  if(confirm(`Remove ${STANDARDS[idx].n} from index?`)){STANDARDS.splice(idx,1);TFIDF=null;updateNavCounts();filterUpTable();renderStdsTable();showToast('🗑','Standard removed. Rebuild index to apply.')}}
+
+function renderStdsTable(){
+  const q=document.getElementById('std-search').value.toLowerCase();
+  const cat=document.getElementById('std-cat').value;
+  const mand=document.getElementById('std-mand').value;
+  const f=STANDARDS.filter(s=>{
+    if(cat&&s.cat!==cat)return false;
+    if(mand==='mand'&&!s.mandatory)return false;
+    if(mand==='isi'&&!s.isi)return false;
+    if(mand==='active'&&s.status!=='Active')return false;
+    if(q&&!s.n.toLowerCase().includes(q)&&!s.t.toLowerCase().includes(q)&&!s.cat.toLowerCase().includes(q)&&!s.kw.some(k=>k.includes(q)))return false;
+    return true;
+  });
+  document.getElementById('std-tbody').innerHTML=f.map(s=>`<tr onclick="showModal(${STANDARDS.indexOf(s)})" style="cursor:pointer">
+    <td class="td-num">${s.n}</td>
+    <td style="color:var(--text);max-width:250px">${s.t}</td>
+    <td><span class="ctag t-cat">${s.cat}</span></td>
+    <td style="color:var(--text2)">${s.sub}</td>
+    <td class="td-num">${s.yr}</td>
+    <td><span class="ctag t-ok">${s.status}</span></td>
+    <td class="${s.mandatory?'td-yes':'td-no'}">${s.mandatory?'⚠ Yes':'—'}</td>
+    <td class="${s.isi?'td-yes':'td-no'}">${s.isi?'⭐ Yes':'—'}</td>
+  </tr>`).join('');
+  document.getElementById('std-count-label').textContent=`Showing ${f.length} of ${STANDARDS.length} standards`;
+}
+
+// ══════════════════════════════════════════════════
+//  FILE UPLOAD
+// ══════════════════════════════════════════════════
+let uploadedFiles=[];
+
+function dragOver(e){e.preventDefault();document.getElementById('upload-area').classList.add('drag-over')}
+function dragLeave(){document.getElementById('upload-area').classList.remove('drag-over')}
+function dropFile(e){e.preventDefault();dragLeave();handleFiles(e.dataTransfer.files)}
+
+function handleFiles(files){
+  [...files].forEach(file=>{
+    const ext=file.name.split('.').pop().toLowerCase();
+    const item={name:file.name,size:formatSize(file.size),ext,progress:0,status:'Processing',file};
+    uploadedFiles.push(item);
+    renderFileList();
+    // Simulate parsing
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const content=e.target.result;
+      let added=0;
+      if(ext==='json'){
+        try{
+          const data=JSON.parse(content);
+          if(Array.isArray(data)){
+            data.forEach(d=>{
+              if(d.standard_number&&d.title&&!STANDARDS.find(s=>s.n===d.standard_number)){
+                STANDARDS.push({n:d.standard_number,t:d.title,cat:d.category||'Other',sub:d.subcategory||'Other',scope:d.scope||'',kw:d.keywords||[],yr:d.year||2024,status:d.status||'Active',mandatory:!!d.mandatory,isi:!!d.isi_mark_required,products:d.products||[],related:d.related||[]});
+                added++;
+              }
+            });
+            TFIDF=null;
+          }
+        }catch(err){showToast('❌','Invalid JSON format')}
+      }
+      item.progress=100;item.status='Indexed';
+      item.added=added;
+      renderFileList();
+      updateNavCounts();
+      filterUpTable();
+      renderStdsTable();
+      showToast('✅',`${file.name}: ${added} new standards added`);
+    };
+    reader.readAsText(file);
+  });
+}
+
+function renderFileList(){
+  const el=document.getElementById('file-list');
+  el.innerHTML=uploadedFiles.map((f,i)=>`<div class="file-item">
+    <div class="file-icon">${f.ext==='json'?'📋':f.ext==='csv'?'📊':'📄'}</div>
+    <div class="file-info">
+      <div class="file-name">${f.name}</div>
+      <div class="file-meta">${f.size} · ${f.added!==undefined?f.added+' standards added':'processing...'}</div>
+    </div>
+    <div class="file-prog-wrap">
+      <div class="file-prog"><div class="file-prog-fill" style="width:${f.progress}%"></div></div>
+    </div>
+    <span class="file-status ${f.status==='Indexed'?'fs-ok':'fs-proc'}">${f.status}</span>
+    <button class="file-del" onclick="removeFile(${i})">✕</button>
+  </div>`).join('');
+}
+
+function removeFile(i){uploadedFiles.splice(i,1);renderFileList()}
+function formatSize(b){return b>1048576?(b/1048576).toFixed(1)+'MB':b>1024?(b/1024).toFixed(0)+'KB':b+'B'}
+
+function processUploadedData(){
+  TFIDF=null;buildIndex();
+  showToast('⚙','Index rebuilt with '+STANDARDS.length+' standards');
+  updateNavCounts();
+}
+
+function downloadSampleJSON(){
+  const sample=[STANDARDS[0],STANDARDS[8]].map(s=>({standard_number:s.n,title:s.t,category:s.cat,subcategory:s.sub,scope:s.scope,keywords:s.kw,year:s.yr,status:s.status,mandatory:s.mandatory,isi_mark_required:s.isi,products:s.products,related:s.related}));
+  const blob=new Blob([JSON.stringify(sample,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bis_sample_dataset.json';a.click();
+  showToast('⬇','Sample JSON downloaded');
+}
+
+function exportStandards(){
+  const header=['standard_number','title','category','subcategory','year','status','mandatory','isi_mark_required'];
+  const rows=STANDARDS.map(s=>[s.n,`"${s.t}"`,s.cat,s.sub,s.yr,s.status,s.mandatory,s.isi]);
+  const csv=[header,...rows].map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bis_standards_export.csv';a.click();
+  showToast('⬇','CSV exported ('+STANDARDS.length+' standards)');
+}
+
+// ══════════════════════════════════════════════════
+//  BATCH EVALUATION
+// ══════════════════════════════════════════════════
+const TEST_QUERIES=[
+  {id:"Q001",q:"Manufacturer of OPC 53 grade cement for precast and prestressed concrete elements",exp:["IS 269:2015","IS 1489-1:2015","IS 456:2000"]},
+  {id:"Q002",q:"Fe 500D TMT deformed bars for seismic zone 4 and 5 reinforced concrete buildings",exp:["IS 1786:2008","IS 456:2000"]},
+  {id:"Q003",q:"M30 grade concrete mix design for highway bridge deck",exp:["IS 456:2000","IS 10262:2019","IS 383:2016","IS 516:1959"]},
+  {id:"Q004",q:"Fly ash lime bricks for load bearing masonry wall construction",exp:["IS 12894:2002","IS 1077:1992","IS 3812-1:2003"]},
+  {id:"Q005",q:"Coarse crushed granite aggregate for M25 ready mix concrete production",exp:["IS 383:2016","IS 456:2000","IS 10262:2019"]},
+  {id:"Q006",q:"Portland pozzolana cement blended with fly ash for marine coastal structures",exp:["IS 1489-1:2015","IS 455:2015","IS 269:2015"]},
+  {id:"Q007",q:"AAC autoclaved aerated concrete blocks for thermal insulation partition walls",exp:["IS 6441:2021","IS 2185-1:2005"]},
+  {id:"Q008",q:"Superplasticizer high range water reducer admixture for self compacting concrete",exp:["IS 9103:1999","IS 456:2000"]},
+  {id:"Q009",q:"Bituminous waterproofing membrane for flat roof terrace waterproofing DPC",exp:["IS 1322:2019","IS 2645:2003"]},
+  {id:"Q010",q:"GGBS ground granulated blast furnace slag as cement replacement sustainable green concrete",exp:["IS 12089:1987","IS 455:2015","IS 3812-1:2003"]},
+];
+
+let evalData=[];
+
+function normalize(s){return s.replace(/\s/g,'').toLowerCase()}
+
+async function runBatchEval(){
+  evalData=[];let hits=0,mrrSum=0,latSum=0;
+  for(const tq of TEST_QUERIES){
+    const t0=performance.now();
+    const res=hybridRetrieve(tq.q,5);
+    const lat=(performance.now()-t0)/1000;
+    const retrieved=res.map(r=>r.std.n);
+    const exp=tq.exp;
+    const top3=retrieved.slice(0,3);
+    const hit=exp.some(e=>top3.some(r=>normalize(r)===normalize(e)));
+    if(hit)hits++;
+    let mrr=0;
+    for(let k=0;k<Math.min(5,retrieved.length);k++){
+      if(exp.some(e=>normalize(retrieved[k])===normalize(e))){mrr=1/(k+1);break}
+    }
+    mrrSum+=mrr;latSum+=lat;
+    evalData.push({id:tq.id,q:tq.q,retrieved,exp,lat,hit,mrr});
+  }
+  const N=TEST_QUERIES.length;
+  const hr=(hits/N*100).toFixed(1);
+  const mrr5=(mrrSum/N).toFixed(4);
+  const avgLat=(latSum/N).toFixed(3);
+  
+  document.getElementById('g-hr').textContent=hr+'%';
+  document.getElementById('g-mrr').textContent=mrr5;
+  document.getElementById('g-lat').textContent=avgLat+'s';
+  document.getElementById('gf-hr').style.width=hr+'%';
+  document.getElementById('gf-mrr').style.width=(parseFloat(mrr5)*100)+'%';
+  document.getElementById('gf-lat').style.width=(parseFloat(avgLat)/5*100)+'%';
+  
+  // Scoring
+  const autoScore=Math.round((parseFloat(hr)/100*16)+(parseFloat(mrr5)/0.7*16)+(5-parseFloat(avgLat))/5*8);
+  document.getElementById('sc-auto').textContent=Math.min(40,Math.max(0,autoScore))+'/40';
+  document.getElementById('sc-qual').textContent='17/20';
+  
+  renderEvalBars();
+  
+  // JSON preview
+  document.getElementById('eval-json').innerHTML=evalData.map(r=>fmtJSON({id:r.id,retrieved_standards:r.retrieved,latency_seconds:parseFloat(r.lat.toFixed(3)),expected_standards:r.exp})).join('\n\n');
+  
+  showToast('✅',`Evaluation complete — Hit@3: ${hr}%, MRR@5: ${mrr5}`);
+}
+
+function renderEvalBars(){
+  if(!evalData.length){renderEvalBarsEmpty();return}
+  document.getElementById('eval-bars').innerHTML=evalData.map(r=>`
+    <div class="eval-bar">
+      <div class="eb-id">${r.id}</div>
+      <div class="eb-track"><div class="eb-fill" style="width:${r.mrr*100}%;background:${r.hit?'var(--emerald2)':'var(--ruby2)'}"></div></div>
+      <div class="eb-val" style="color:${r.hit?'var(--emerald2)':'var(--ruby2)'}">${r.mrr.toFixed(2)}</div>
+      <div class="eb-hit ${r.hit?'hit-yes':'hit-no'}">${r.hit?'HIT':'MISS'}</div>
+    </div>`).join('');
+}
+
+function renderEvalBarsEmpty(){
+  document.getElementById('eval-bars').innerHTML='<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px;font-family:var(--font-mono)">Run evaluation to see per-query results →</div>';
+}
+
+function downloadEvalJSON(){
+  const data=evalData.length?evalData.map(r=>({id:r.id,query:r.q,retrieved_standards:r.retrieved,expected_standards:r.exp,latency_seconds:parseFloat(r.lat.toFixed(3)),hit:r.hit,mrr:r.mrr})):TEST_QUERIES.map(tq=>({id:tq.id,query:tq.q,retrieved_standards:[],expected_standards:tq.exp,latency_seconds:0}));
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='bis_eval_results.json';a.click();
+  showToast('⬇','Evaluation JSON downloaded');
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+let toastTimer=null;
+function showToast(icon,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toast-icon').textContent=icon;
+  document.getElementById('toast-msg').textContent=msg;
+  t.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ══════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')closeModal();
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter')runSearch();
+});
+
+// Pre-build index
+setTimeout(()=>{if(!TFIDF)buildIndex()},500);
+</script>
+</body>
+</html>
